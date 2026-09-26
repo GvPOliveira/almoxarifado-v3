@@ -3,7 +3,8 @@ package br.com.almoxarifado.entities;
 import jakarta.persistence.*;
 
 @Entity
-public class Product {
+public class Branch {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,18 +15,20 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
-    public Product(){}
+    public Branch(){}
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public String getCode() {
-        return code;
-    }
     public Long getId() {
         return id;
     }
+
+    public String getCode() {
+        return code;
+    }
+
     public String getName() {
         return name;
     }
