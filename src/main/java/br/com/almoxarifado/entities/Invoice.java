@@ -26,6 +26,12 @@ public class Invoice {
     public Invoice() {
     }
 
+    public Invoice(String number, String supplier, Branch branch) {
+        this.number = number;
+        this.supplier = supplier;
+        this.branch = branch;
+    }
+
     public Long getId() {
         return id;
     }
