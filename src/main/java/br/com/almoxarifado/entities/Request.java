@@ -21,6 +21,11 @@ public class Request {
 
     public Request(){}
 
+    public Request(String number, Branch branch) {
+        this.number = number;
+        this.branch = branch;
+    }
+
     public Long getId() {
         return id;
     }
