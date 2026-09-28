@@ -30,6 +30,13 @@ public class BranchProduct {
     public BranchProduct() {
     }
 
+    public BranchProduct(Branch branch, Product product, int quantity, String location) {
+        this.branch = branch;
+        this.product = product;
+        this.quantity = quantity;
+        this.location = location;
+    }
+
     public void setLocation(String location) {
         this.location = location;
     }
