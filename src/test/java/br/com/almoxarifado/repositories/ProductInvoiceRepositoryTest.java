@@ -1,16 +1,14 @@
 package br.com.almoxarifado.repositories;
 
 
-import br.com.almoxarifado.entities.Branch;
-import br.com.almoxarifado.entities.Invoice;
-import br.com.almoxarifado.entities.Product;
-import br.com.almoxarifado.entities.ProductInvoice;
+import br.com.almoxarifado.entities.*;
 import br.com.almoxarifado.enums.Destination;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +26,8 @@ public class ProductInvoiceRepositoryTest {
     private ProductRepository productRepository;
     @Autowired
     private BranchRepository branchRepository;
+    @Autowired
+    private SupplierRepository supplierRepository;
 
 
     @Test
@@ -40,11 +40,13 @@ public class ProductInvoiceRepositoryTest {
         Product savedProduct3 = productRepository.save(product3);
         Branch branch = new Branch("001", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
-        Invoice invoice = new Invoice("566", "Morelate", savedBranch);
+        Supplier supplier = new Supplier("Fornecedor 1", "05.032.005/0001-56");
+        Supplier savedSupplier = supplierRepository.save(supplier);
+        Invoice invoice = new Invoice("566", savedSupplier, savedBranch, new BigDecimal("10.200"));
         Invoice savedInvoice = invoiceRepository.save(invoice);
-        ProductInvoice productInvoice1 = new ProductInvoice(savedInvoice, savedProduct1, 100, Destination.STOCK);
-        ProductInvoice productInvoice2 = new ProductInvoice(savedInvoice, savedProduct2, 200, Destination.STOCK);
-        ProductInvoice productInvoice3 = new ProductInvoice(savedInvoice, savedProduct3, 300, Destination.DIRECT);
+        ProductInvoice productInvoice1 = new ProductInvoice(savedInvoice, savedProduct1, 100, Destination.STOCK, new BigDecimal("3.400"));
+        ProductInvoice productInvoice2 = new ProductInvoice(savedInvoice, savedProduct2, 200, Destination.STOCK, new BigDecimal("3.400"));
+        ProductInvoice productInvoice3 = new ProductInvoice(savedInvoice, savedProduct3, 300, Destination.DIRECT, new BigDecimal("3.400"));
         List<ProductInvoice> productInvoiceList = new ArrayList<ProductInvoice>();
         productInvoiceList.add(productInvoice1);
         productInvoiceList.add(productInvoice2);
@@ -63,10 +65,12 @@ public class ProductInvoiceRepositoryTest {
     }
 
     @Test
-    void foundListProductInvoiceNotFound(){
-        Branch branch = new Branch("002","Branch South");
+    void foundListProductInvoiceNotFound() {
+        Branch branch = new Branch("002", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
-        Invoice invoice = new Invoice("5000", "Morelate",savedBranch);
+        Supplier supplier = new Supplier("Fornecedor 1", "05.005.025/0002-33");
+        Supplier savedSupplier = supplierRepository.save(supplier);
+        Invoice invoice = new Invoice("5000", savedSupplier, savedBranch, new BigDecimal("10.200"));
         Invoice savedInvoice = invoiceRepository.save(invoice);
         List<ProductInvoice> productInvoiceList = productInvoiceRepository.findByInvoiceId(savedInvoice.getId());
 

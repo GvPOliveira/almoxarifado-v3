@@ -25,7 +25,7 @@ public class BranchProductRepositoryTest {
 
     @Test
     void createBranchProduct() {
-        Product product = new Product("P001", "Teclado");
+        Product product = new Product("P003", "Teclado");
         Product savedProduct = productRepository.save(product);
         Branch branch = new Branch("001", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
@@ -33,7 +33,7 @@ public class BranchProductRepositoryTest {
                 200, "CORREDOR 2");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
         assertNotNull(savedBranchProduct);
-        assertEquals("P001", savedBranchProduct.getProduct().getCode());
+        assertEquals("P003", savedBranchProduct.getProduct().getCode());
         assertEquals("001", savedBranchProduct.getBranch().getCode());
         assertEquals(200, savedBranchProduct.getQuantity());
     }
