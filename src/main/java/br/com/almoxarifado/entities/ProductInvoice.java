@@ -23,6 +23,13 @@ public class ProductInvoice {
 
     public ProductInvoice(){}
 
+    public ProductInvoice(Invoice invoice, Product product, int quantity, Destination destination) {
+        this.invoice = invoice;
+        this.product = product;
+        this.quantity = quantity;
+        this.destination = destination;
+    }
+
     public Long getId() {
         return id;
     }
