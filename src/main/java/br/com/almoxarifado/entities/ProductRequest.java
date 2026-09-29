@@ -23,7 +23,17 @@ public class ProductRequest {
     @Column(nullable = false)
     private int attendedQuantity;
 
+    public Request getRequest() {
+        return request;
+    }
+
     public ProductRequest(){}
+
+    public ProductRequest(BranchProduct branchProduct, Request request, int requestedQuantity) {
+        this.branchProduct = branchProduct;
+        this.request = request;
+        this.requestedQuantity = requestedQuantity;
+    }
 
     public Long getId() {
         return id;

@@ -3,6 +3,8 @@ package br.com.almoxarifado.entities;
 import br.com.almoxarifado.enums.Destination;
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 public class ProductInvoice {
 
@@ -20,14 +22,17 @@ public class ProductInvoice {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Destination destination;
+    @Column(nullable = false)
+    private BigDecimal unitPrice;
 
     public ProductInvoice(){}
 
-    public ProductInvoice(Invoice invoice, Product product, int quantity, Destination destination) {
+    public ProductInvoice(Invoice invoice, Product product, int quantity, Destination destination, BigDecimal unitPrice) {
         this.invoice = invoice;
         this.product = product;
         this.quantity = quantity;
         this.destination = destination;
+        this.unitPrice = unitPrice;
     }
 
     public Long getId() {

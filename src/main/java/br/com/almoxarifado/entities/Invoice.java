@@ -2,10 +2,13 @@ package br.com.almoxarifado.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 @Entity
 @Table(
         uniqueConstraints = @UniqueConstraint(
-                columnNames = {"number", "supplier"}
+                columnNames = {"number", "supplier_id"}
         )
 )
 public class Invoice {
@@ -15,21 +18,27 @@ public class Invoice {
     private Long id;
     @Column(nullable = false)
     private String number;
-    @Column(nullable = false)
-    private String supplier;
+    @ManyToOne()
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private Supplier supplier;
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.PERSIST)
+    private List<ProductInvoice> productInvoices;
+    private BigDecimal totalValue;
     private boolean processed;
     private boolean reversed;
 
     public Invoice() {
     }
 
-    public Invoice(String number, String supplier, Branch branch) {
+    public Invoice(String number, Supplier supplier, Branch branch, BigDecimal totalValue) {
         this.number = number;
         this.supplier = supplier;
         this.branch = branch;
+        this.totalValue = totalValue;
     }
 
     public Long getId() {
@@ -40,7 +49,7 @@ public class Invoice {
         return number;
     }
 
-    public String getSupplier() {
+    public Supplier getSupplier() {
         return supplier;
     }
 

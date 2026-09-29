@@ -2,6 +2,8 @@ package br.com.almoxarifado.entities;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(
         uniqueConstraints = @UniqueConstraint(
@@ -26,6 +28,9 @@ public class BranchProduct {
     private int quantity;
 
     private String location;
+
+    @OneToMany(mappedBy = "branchProduct")
+    private List<Movement> movements;
 
     public BranchProduct() {
     }
