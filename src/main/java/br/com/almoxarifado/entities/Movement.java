@@ -35,7 +35,18 @@ public class Movement {
     @Column(name = "date_time")
     private LocalDateTime dateTime;
 
-    public Movement(){}
+    public Movement() {
+    }
+
+    public Movement(MovementType movementType, OriginType originType, String originNumber,
+                    BranchProduct branchProduct, int quantity) {
+        this.movementType = movementType;
+        this.originType = originType;
+        this.originNumber = originNumber;
+        this.branchProduct = branchProduct;
+        this.quantity = quantity;
+        this.dateTime = LocalDateTime.now();
+    }
 
     public UUID getUuid() {
         return uuid;
@@ -65,7 +76,4 @@ public class Movement {
         return dateTime;
     }
 
-    public LocalDateTime getLocalDateTime() {
-        return dateTime;
-    }
 }
