@@ -31,9 +31,9 @@ public class ProductRequestRepositoryTest {
 
     @Test
     void findByBranchProductAndRequest() {
-        Product product = new Product("P020", "Telemoto");
+        Product product = new Product("P035", "Telemoto");
         Product savedProduct = productRepository.save(product);
-        Branch branch = new Branch("001", "Branch South");
+        Branch branch = new Branch("003", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
         BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, 300, "P-030");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
@@ -48,8 +48,8 @@ public class ProductRequestRepositoryTest {
                 savedRequest);
 
         assertTrue(foundProductRequest.isPresent());
-        assertEquals("P020", foundProductRequest.get().getBranchProduct().getProduct().getCode());
-        assertEquals("001", foundProductRequest.get().getBranchProduct().getBranch().getCode());
+        assertEquals("P035", foundProductRequest.get().getBranchProduct().getProduct().getCode());
+        assertEquals("003", foundProductRequest.get().getBranchProduct().getBranch().getCode());
         assertEquals("Request", foundProductRequest.get().getRequest().getNumber());
         assertEquals(300, foundProductRequest.get().getBranchProduct().getQuantity());
 
@@ -57,9 +57,9 @@ public class ProductRequestRepositoryTest {
     }
     @Test
     void findByBranchProductAndRequestNotFound() {
-        Product product = new Product("P020", "Telemoto");
+        Product product = new Product("P035", "Telemoto");
         Product savedProduct = productRepository.save(product);
-        Branch branch = new Branch("001", "Branch South");
+        Branch branch = new Branch("003", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
         BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, 300, "P-030");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
