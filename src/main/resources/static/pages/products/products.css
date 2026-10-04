@@ -1,0 +1,24 @@
+#products {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+#products h1 {
+    grid-column: 1 / -1;
+}
+
+#register,
+#search,
+#list {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.products-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 15px;
+}

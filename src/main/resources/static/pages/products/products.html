@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="products.css">
+
+    <title>Produtos - Almoxarifado</title>
+</head>
+
+<body>
+
+<main class="container">
+
+    <h1>Produtos</h1>
+
+    <section id="register">
+        <h2>Cadastrar produto</h2>
+
+        <div class="group">
+            <label for="codeProduct">Código</label>
+            <input
+                    type="text"
+                    id="codeProduct"
+                    placeholder="E001.200.227"
+            >
+        </div>
+
+        <div class="group">
+            <label for="nameProduct">Nome</label>
+            <input
+                    type="text"
+                    id="nameProduct"
+                    placeholder="Parafuso 3/4 x 5"
+            >
+        </div>
+
+        <button type="button" id="registerButton">
+            Cadastrar
+        </button>
+
+        <p id="result"></p>
+    </section>
+
+
+    <section id="search">
+        <h2>Buscar produto</h2>
+
+        <div class="group">
+            <label for="productCode">Código</label>
+            <input
+                    type="text"
+                    id="productCode"
+                    placeholder="Digite o código do produto"
+            >
+        </div>
+
+        <button type="button" id="getProduct">
+            Buscar produto
+        </button>
+
+        <div class="products-card">
+            <div id="showProduct"></div>
+        </div>
+    </section>
+
+
+    <section id="list">
+        <h2>Produtos cadastrados</h2>
+
+        <button type="button" id="getProducts">
+            Buscar produtos
+        </button>
+
+        <div class="products-card">
+            <div id="productList"></div>
+        </div>
+    </section>
+
+</main>
+
+<script src="products.js"></script>
+
+</body>
+</html>

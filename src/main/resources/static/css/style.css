@@ -1,0 +1,29 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 50px auto;
+}
+
+button {
+    padding: 8px 15px;
+    cursor: pointer;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.group label {
+    margin-bottom: 5px;
+}
+
+.group input {
+    padding: 8px;
+}
