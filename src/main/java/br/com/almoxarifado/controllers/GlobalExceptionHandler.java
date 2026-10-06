@@ -1,15 +1,42 @@
 package br.com.almoxarifado.controllers;
 
 import br.com.almoxarifado.dtos.ErrorResponseDTO;
+import br.com.almoxarifado.dtos.ValidationErrorResponseDTO;
 import br.com.almoxarifado.exceptions.ProductAlreadyExistsException;
 import br.com.almoxarifado.exceptions.ProductNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ValidationErrorResponseDTO> handlerValidation(MethodArgumentNotValidException
+          methodArgumentNotValidException){
+        Map<String, String> errors = new HashMap<>();
+        List<FieldError> fieldErrors = methodArgumentNotValidException.getBindingResult().getFieldErrors();
+        for (FieldError fieldError : fieldErrors) {
+            String errorName = fieldError.getField();
+            String errorReason = fieldError.getDefaultMessage();
+            errors.put(errorName, errorReason);
+        }
+        ValidationErrorResponseDTO validationErrorResponseDTO = new ValidationErrorResponseDTO(errors);
+        ResponseEntity<ValidationErrorResponseDTO> responseEntity =
+                 new ResponseEntity<>(validationErrorResponseDTO,HttpStatus.BAD_REQUEST);
+        return responseEntity;
+    }
+
+
 
     @ExceptionHandler(ProductAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDTO> handleProductAlreadyExists(

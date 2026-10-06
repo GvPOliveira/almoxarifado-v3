@@ -15,6 +15,13 @@
     border-radius: 8px;
     padding: 20px;
 }
+.error {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #d32f2f;
+    min-height: 18px;
+}
 
 .products-card {
     border: 1px solid #ccc;

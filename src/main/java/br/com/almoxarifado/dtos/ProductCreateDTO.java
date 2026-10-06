@@ -1,8 +1,12 @@
 package br.com.almoxarifado.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+
 public class ProductCreateDTO {
 
+    @NotBlank
     private String code;
+    @NotBlank
     private String name;
 
 

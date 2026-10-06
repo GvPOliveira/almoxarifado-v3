@@ -53,14 +53,28 @@ async function registerProduct() {
             "Content-Type": "application/json"
         }
     })
-
     if (response.ok) {
         alert("Produto criado com sucesso!")
         const result = document.getElementById("result");
         result.innerHTML = "<b>Produto Cadastrado!</b><p>Código: " + codeProduct.value + "</p><p>Name: " + nameProduct.value + "</p>"
-    } else {
-        const responseError = await response.json()
+    } else if(response.status === 400) {
+        const codeError = document.getElementById("codeProductError");
+        const nameError = document.getElementById("nameProductError");
+        codeError.textContent = "";
+        nameError.textContent = "";
+        const responseError = await response.json();
+        for (const [field, message] of Object.entries(responseError.errors)) {
+            if (field === "code") {
+                codeError.textContent = message;
+            } else if (field === "name"){
+                nameError.textContent = message;
+            }
+        }
+    }
+    else if(response.status === 409){
+        const responseError = await response.json();
         alert(responseError.message)
     }
+
 
 }
