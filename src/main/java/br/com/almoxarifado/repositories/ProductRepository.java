@@ -1,5 +1,6 @@
 package br.com.almoxarifado.repositories;
 
+import br.com.almoxarifado.dtos.ProductResponseDTO;
 import br.com.almoxarifado.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 

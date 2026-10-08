@@ -2,7 +2,7 @@ package br.com.almoxarifado.controllers;
 
 
 import br.com.almoxarifado.dtos.ProductCreateDTO;
-import br.com.almoxarifado.entities.Product;
+import br.com.almoxarifado.dtos.ProductResponseDTO;
 import br.com.almoxarifado.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,18 +22,18 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(@RequestBody @Valid ProductCreateDTO productCreateDTO) {
+    public ProductResponseDTO createProduct(@RequestBody @Valid ProductCreateDTO productCreateDTO) {
         return productService.createProduct(productCreateDTO.getCode(), productCreateDTO.getName());
     }
 
     @GetMapping("/{code}")
-    public Product getProductByCode(@PathVariable String code) {
+    public ProductResponseDTO getProductByCode(@PathVariable String code) {
         return productService.getProductByCode(code);
     }
 
 
     @GetMapping
-    public List<Product> getProducts() {
+    public List<ProductResponseDTO> getProducts() {
         return productService.getProducts();
     }
 
