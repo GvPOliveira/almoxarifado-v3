@@ -1,4 +1,4 @@
-package br.com.almoxarifado.dtos;
+package br.com.almoxarifado.dtos.common;
 
 public class ErrorResponseDTO {
    private String message;

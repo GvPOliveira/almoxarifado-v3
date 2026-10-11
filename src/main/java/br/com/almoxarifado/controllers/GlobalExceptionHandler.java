@@ -1,9 +1,8 @@
 package br.com.almoxarifado.controllers;
 
-import br.com.almoxarifado.dtos.ErrorResponseDTO;
-import br.com.almoxarifado.dtos.ValidationErrorResponseDTO;
-import br.com.almoxarifado.exceptions.ProductAlreadyExistsException;
-import br.com.almoxarifado.exceptions.ProductNotFoundException;
+import br.com.almoxarifado.dtos.common.ErrorResponseDTO;
+import br.com.almoxarifado.dtos.common.ValidationErrorResponseDTO;
+import br.com.almoxarifado.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -22,7 +21,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationErrorResponseDTO> handlerValidation(MethodArgumentNotValidException
-          methodArgumentNotValidException){
+                                                                                methodArgumentNotValidException) {
         Map<String, String> errors = new HashMap<>();
         List<FieldError> fieldErrors = methodArgumentNotValidException.getBindingResult().getFieldErrors();
         for (FieldError fieldError : fieldErrors) {
@@ -32,10 +31,30 @@ public class GlobalExceptionHandler {
         }
         ValidationErrorResponseDTO validationErrorResponseDTO = new ValidationErrorResponseDTO(errors);
         ResponseEntity<ValidationErrorResponseDTO> responseEntity =
-                 new ResponseEntity<>(validationErrorResponseDTO,HttpStatus.BAD_REQUEST);
+                new ResponseEntity<>(validationErrorResponseDTO, HttpStatus.BAD_REQUEST);
         return responseEntity;
     }
 
+    @ExceptionHandler(BranchAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDTO> handlerBranchAlreadyExists(BranchAlreadyExistsException
+                                                                               branchAlreadyExistsException) {
+        ErrorResponseDTO error = new ErrorResponseDTO(branchAlreadyExistsException.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(BranchInvalidException.class)
+    public ResponseEntity<ErrorResponseDTO> handlerBranchInvalid(BranchInvalidException
+                                                                         branchInvalidException) {
+        ErrorResponseDTO error = new ErrorResponseDTO(branchInvalidException.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BranchNotFoundException.class)
+    public ResponseEntity<ErrorResponseDTO> handlerBranchNotFound(BranchNotFoundException
+                                                                          branchNotFoundException) {
+        ErrorResponseDTO error = new ErrorResponseDTO(branchNotFoundException.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
 
 
     @ExceptionHandler(ProductAlreadyExistsException.class)

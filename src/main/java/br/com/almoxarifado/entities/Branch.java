@@ -12,7 +12,7 @@ public class Branch {
     @Column(nullable = false, unique = true)
     private String code;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     public Branch(){}

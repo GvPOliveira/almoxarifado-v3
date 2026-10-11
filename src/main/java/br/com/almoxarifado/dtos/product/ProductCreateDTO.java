@@ -1,20 +1,16 @@
-package br.com.almoxarifado.dtos;
+package br.com.almoxarifado.dtos.product;
 
+import jakarta.validation.constraints.NotBlank;
 
-public class ProductResponseDTO {
+public class ProductCreateDTO {
 
+    @NotBlank
     private String code;
+    @NotBlank
     private String name;
 
 
-    public ProductResponseDTO() {
-    }
-
-
-    public ProductResponseDTO(String code, String name) {
-        this.code = code;
-        this.name = name;
-    }
+    public ProductCreateDTO(){}
 
     public String getCode() {
         return code;

@@ -1,8 +1,6 @@
 package br.com.almoxarifado.controllers;
 
 
-import br.com.almoxarifado.entities.Product;
-import br.com.almoxarifado.repositories.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

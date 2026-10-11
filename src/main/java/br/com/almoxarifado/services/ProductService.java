@@ -1,14 +1,13 @@
 package br.com.almoxarifado.services;
 
 
-import br.com.almoxarifado.dtos.ProductResponseDTO;
+import br.com.almoxarifado.dtos.product.ProductResponseDTO;
 import br.com.almoxarifado.entities.Product;
 import br.com.almoxarifado.exceptions.ProductAlreadyExistsException;
 import br.com.almoxarifado.exceptions.ProductNotFoundException;
 import br.com.almoxarifado.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

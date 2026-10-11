@@ -1,4 +1,4 @@
-package br.com.almoxarifado.dtos;
+package br.com.almoxarifado.dtos.common;
 
 import java.util.Map;
 

@@ -1,8 +1,8 @@
 package br.com.almoxarifado.controllers;
 
 
-import br.com.almoxarifado.dtos.ProductCreateDTO;
-import br.com.almoxarifado.dtos.ProductResponseDTO;
+import br.com.almoxarifado.dtos.product.ProductCreateDTO;
+import br.com.almoxarifado.dtos.product.ProductResponseDTO;
 import br.com.almoxarifado.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
