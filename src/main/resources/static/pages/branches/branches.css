@@ -448,3 +448,39 @@ h1 {
         width: 100%;
     }
 }
+#branch-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+#branch-list > div {
+    padding: 18px;
+    border: 1px solid #e1e5ec;
+    border-radius: 10px;
+    background-color: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#branch-list > div {
+    border-color: #98a2b3;
+    box-shadow: 0 4px 12px rgb(16 24 40 / 6%);
+}
+
+#branch-list p {
+    margin: 0;
+    color: #475467;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+#branch-list p + p {
+    margin-top: 10px;
+}
+
+#branch-list strong {
+    color: #101828;
+    font-weight: 600;
+}

@@ -1,10 +1,47 @@
 const buttonSubmit = document.getElementById("submit-button");
+const buttonToUpdate = document.getElementById("get-branches");
 
 buttonSubmit.addEventListener("click", createBranch)
+buttonToUpdate.addEventListener("click", getBranches)
+
+async function getBranches() {
+
+    const response = await fetch("/branches", {
+        method: "GET"
+    })
+
+    const branches = await response.json();
+    const listBranches = document.getElementById("branch-list");
+    listBranches.textContent = "";
+    for (let i = 0; i < branches.length; i++) {
+        const divBranches = document.createElement("div");
+
+        const pCode = document.createElement("p");
+        const pName = document.createElement("p");
+
+        const strongCode = document.createElement("strong");
+        const strongName = document.createElement("strong");
+
+        strongCode.textContent = "Código: ";
+        strongName.textContent = "Nome: ";
+
+        pCode.appendChild(strongCode);
+        pCode.append(branches[i].code);
+
+        pName.appendChild(strongName);
+        pName.append(branches[i].name);
+
+        divBranches.appendChild(pCode);
+        divBranches.appendChild(pName);
+
+        listBranches.appendChild(divBranches);
+    }
+}
 
 async function createBranch() {
     const code = document.getElementById("code").value;
     const name = document.getElementById("name").value;
+
 
     const branch = {
         "code": code,
@@ -18,7 +55,7 @@ async function createBranch() {
     try {
         const response = await fetch("/branches",
             {
-                method: "post",
+                method: "POST",
                 body: JSON.stringify(branch),
                 headers: {
                     "Content-Type": "application/json"
