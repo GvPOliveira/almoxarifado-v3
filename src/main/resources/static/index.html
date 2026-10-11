@@ -5,28 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="home.css">
 
-    <title>Almoxarifado</title>
+    <title>Almoxarifado V3</title>
 </head>
 
 <body>
-
-<main class="home">
-
-    <h1>Almoxarifado</h1>
-    <p>Controle de estoque e movimentações</p>
-
-    <nav class="menu">
-        <a href="pages/products/products.html">
-            Produtos
+<header class="header">
+    <div class="container header-content">
+        <a href="/" class="logo">
+            <span class="logo-icon">A</span>
+            <span>Almoxarifado<span class="logo-version">V3</span></span>
         </a>
+    </div>
+</header>
+<main class="container">
 
-        <a href="#">
-            Filiais
-        </a>
-    </nav>
+    <section class="home-intro">
+        <p class="eyebrow">GESTÃO DE ESTOQUE</p>
+        <h1>Painel do almoxarifado</h1>
+        <p class="subtitle">
+            Acesse os módulos para consultar cadastros e gerenciar
+            as operações do almoxarifado.
+        </p>
+    </section>
+
+    <section class="module-section">
+        <h2>Cadastros</h2>
+
+        <div class="module-grid">
+            <a class="module-card" href="pages/products/products.html">
+                <span class="module-label">CADASTRO</span>
+                <h3>Produtos</h3>
+                <p>Cadastre produtos e consulte os itens registrados no sistema.</p>
+                <span class="module-action">Acessar módulo →</span>
+            </a>
+
+            <a class="module-card" href="pages/branches/branches.html">
+                <span class="module-label">CADASTRO</span>
+                <h3>Filiais</h3>
+                <p>Gerencie as filiais que fazem parte do controle de estoque.</p>
+                <span class="module-action">Acessar módulo →</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="module-section">
+        <h2>Movimentações</h2>
+
+        <div class="module-grid">
+            <article class="module-card module-card-disabled">
+                <span class="module-label">ENTRADA</span>
+                <h3>Notas fiscais</h3>
+                <p>Registre entradas de produtos no estoque a partir de notas fiscais.</p>
+                <span class="module-status">Em desenvolvimento</span>
+            </article>
+
+            <article class="module-card module-card-disabled">
+                <span class="module-label">SAÍDA</span>
+                <h3>Requisições</h3>
+                <p>Gerencie requisições e registre o atendimento de materiais.</p>
+                <span class="module-status">Em desenvolvimento</span>
+            </article>
+        </div>
+    </section>
 
 </main>
+
+<footer class="page-footer">
+    <p>Almoxarifado V3 · Sistema de controle de estoque</p>
+</footer>
 
 </body>
 </html>

@@ -4,86 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../style.css">
     <link rel="stylesheet" href="products.css">
 
-    <title>Produtos - Almoxarifado</title>
+    <title>Produtos | Almoxarifado V3</title>
+
+    <script src="products.js" defer></script>
 </head>
 
 <body>
 
+<header class="header">
+    <div class="container header-content">
+        <a href="/" class="logo">
+            <span class="logo-icon">A</span>
+            <span>Almoxarifado<span class="logo-version">V3</span></span>
+        </a>
+
+        <nav class="navigation" aria-label="Navegação principal">
+            <a href="#register" class="nav-link active">Produtos</a>
+            <a href="#search" class="nav-link">Buscar</a>
+            <a href="#list" class="nav-link">Listagem</a>
+        </nav>
+    </div>
+</header>
+
+
 <main class="container">
 
-    <h1>Produtos</h1>
-
-    <section id="register">
-        <h2>Cadastrar produto</h2>
-
-        <div class="group">
-            <label for="codeProduct">Código</label>
-            <input
-                    type="text"
-                    id="codeProduct"
-                    placeholder="E001.200.227"
-            >
-            <span class="error" id="codeProductError"></span>
-        </div>
-
-        <div class="group">
-            <label for="nameProduct">Nome</label>
-            <input
-                    type="text"
-                    id="nameProduct"
-                    placeholder="Parafuso 3/4 x 5"
-            >
-            <span class="error" id="nameProductError"></span>
-        </div>
-
-        <button type="button" id="registerButton">
-            Cadastrar
-        </button>
-
-        <p id="result"></p>
+    <section class="page-intro">
+        <h1>Produtos</h1>
+        <p>Cadastre, consulte e acompanhe os produtos registrados no sistema.</p>
     </section>
 
+    <div class="products-layout">
 
-    <section id="search">
-        <h2>Buscar produto</h2>
+        <section id="register" class="panel">
+            <div class="section-heading">
+                <h2>Cadastrar produto</h2>
+                <p>Preencha os dados para registrar um novo produto.</p>
+            </div>
 
-        <div class="group">
-            <label for="productCode">Código</label>
-            <input
-                    type="text"
-                    id="productCode"
-                    placeholder="Digite o código do produto"
-            >
-        </div>
+            <div class="group">
+                <label for="codeProduct">Código</label>
+                <input
+                        type="text"
+                        id="codeProduct"
+                        placeholder="E001.200.227"
+                >
+                <span class="error" id="codeProductError"></span>
+            </div>
 
-        <button type="button" id="getProduct">
-            Buscar produto
-        </button>
+            <div class="group">
+                <label for="nameProduct">Nome</label>
+                <input
+                        type="text"
+                        id="nameProduct"
+                        placeholder="Parafuso 3/4 x 5"
+                >
+                <span class="error" id="nameProductError"></span>
+            </div>
 
-        <div class="products-card">
-            <div id="showProduct"></div>
-        </div>
-    </section>
+            <button type="button" id="registerButton">
+                Cadastrar produto
+            </button>
 
+            <p id="result" role="status" aria-live="polite"></p>
+        </section>
 
-    <section id="list">
-        <h2>Produtos cadastrados</h2>
+        <section id="search" class="panel">
+            <div class="section-heading">
+                <h2>Buscar produto</h2>
+                <p>Consulte um produto utilizando seu código.</p>
+            </div>
 
-        <button type="button" id="getProducts">
-            Buscar produtos
-        </button>
+            <div class="group">
+                <label for="productCode">Código do produto</label>
+                <input
+                        type="text"
+                        id="productCode"
+                        placeholder="Digite o código do produto"
+                >
+            </div>
 
-        <div class="products-card">
-            <div id="productList"></div>
-        </div>
-    </section>
+            <button type="button" id="getProduct">
+                Buscar produto
+            </button>
+
+            <div class="products-card">
+                <div id="showProduct"></div>
+            </div>
+        </section>
+
+        <section id="list" class="panel products-list-panel">
+            <div class="section-heading">
+                <h2>Produtos cadastrados</h2>
+                <p>Consulte os produtos registrados na API.</p>
+            </div>
+
+            <button type="button" id="getProducts">
+                Atualizar listagem
+            </button>
+
+            <div class="products-card">
+                <div id="productList"></div>
+            </div>
+        </section>
+
+    </div>
 
 </main>
-
-<script src="products.js"></script>
 
 </body>
 </html>
