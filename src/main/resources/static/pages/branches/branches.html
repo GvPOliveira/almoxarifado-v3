@@ -57,6 +57,7 @@
                             maxlength="30"
                             required
                     >
+                    <span id="errorCode" class="error"></span>
                     <small>Informe um código único para a filial.</small>
                 </div>
 
@@ -70,15 +71,16 @@
                             maxlength="100"
                             required
                     >
+                    <span id="errorName" class="error"></span>
                     <small>Utilize um nome que identifique a unidade.</small>
                 </div>
             </div>
 
             <div class="form-actions">
-                <button type="reset" class="button button-secondary">
+                <button type="reset" class="button button-secondary" id="reset">
                     Limpar
                 </button>
-                <button type="submit" id="submit-button" class="button button-primary">
+                <button type="button" id="submit-button" class="button button-primary">
                     Cadastrar filial
                 </button>
             </div>
