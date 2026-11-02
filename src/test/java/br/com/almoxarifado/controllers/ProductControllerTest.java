@@ -25,7 +25,7 @@ public class ProductControllerTest {
 
 
     @Test
-    void shouldCreateProduct() throws Exception {
+    void shouldCreateProductWhenDataIsValid() throws Exception {
         mockMvc.perform(
                 post("/products").content("""
                         {
@@ -61,7 +61,7 @@ public class ProductControllerTest {
 
 
     @Test
-    void getProducts() throws Exception {
+    void shouldReturnAllProducts() throws Exception {
         mockMvc.perform(
                 post("/products").content("""
                         {
@@ -96,7 +96,7 @@ public class ProductControllerTest {
 
 
     @Test
-    void getProductByCode() throws Exception {
+    void shouldReturnProductWhenCodeExists() throws Exception {
         mockMvc.perform(post("/products").content("""
                 {
                 "code": "P200",
@@ -110,7 +110,7 @@ public class ProductControllerTest {
     }
 
     @Test
-    void getProductByCodeNotFoundException() throws Exception {
+    void shouldReturnNotFoundWhenProductCodeDoesNotExist() throws Exception {
         mockMvc.perform(get("/products/P200")).andExpect(status().isNotFound()).andExpect(jsonPath("$.message").value("Esse código não existe."));
     }
 

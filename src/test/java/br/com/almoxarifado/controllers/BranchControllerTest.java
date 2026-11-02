@@ -9,6 +9,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,19 +27,19 @@ public class BranchControllerTest {
 
 
     @Test
-    void createBranch() throws Exception {
+    void shouldCreateBranchWhenDataIsValid() throws Exception {
         mockMvc.perform(post("/branches").content("""
                 {
                 "code": "001",
                 "name": "BranchSouth"
                 }
                 """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated()).andExpect(
-                jsonPath("name").value("BranchSouth")
-        ).andExpect(jsonPath("code").value("001"));
+                jsonPath("$.name").value("BranchSouth")
+        ).andExpect(jsonPath("$.code").value("001"));
     }
 
     @Test
-    void createBranchWithCodeDuplicated() throws Exception {
+    void shouldReturnConflictWhenBranchCodeAlreadyExists() throws Exception {
 
         mockMvc.perform(post("/branches").content("""
                 {
@@ -55,7 +57,7 @@ public class BranchControllerTest {
     }
 
     @Test
-    void createBranchWithNameDuplicated() throws Exception {
+    void shouldReturnConflictWhenBranchNameAlreadyExists() throws Exception {
         mockMvc.perform(post("/branches").content("""
                 {
                 "code": "001",
@@ -72,7 +74,7 @@ public class BranchControllerTest {
     }
 
     @Test
-    void createBranchWithNameNull() throws Exception {
+    void shouldReturnBadRequestWhenNameIsNull() throws Exception {
         mockMvc.perform(post("/branches").content("""
                 {
                 "code": " 001",
@@ -82,7 +84,7 @@ public class BranchControllerTest {
     }
 
     @Test
-    void createBranchWithCodeNull() throws Exception {
+    void shouldReturnBadRequestWhenCodeIsNull() throws Exception {
         mockMvc.perform(post("/branches").content("""
                 {
                 "code": null,
@@ -90,8 +92,9 @@ public class BranchControllerTest {
                 }
                 """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
+
     @Test
-    void createBranchWithNameBlank() throws Exception {
+    void shouldReturnBadRequestWhenNameIsBlank() throws Exception {
         mockMvc.perform(post("/branches").content("""
                 {
                 "code": "001",
@@ -99,8 +102,9 @@ public class BranchControllerTest {
                 }
                 """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
+
     @Test
-    void createBranchWithCodeBlank() throws Exception {
+    void shouldReturnBadRequestWhenCodeIsBlank() throws Exception {
         mockMvc.perform(post("/branches").content("""
                 {
                 "code": "      ",
@@ -108,5 +112,41 @@ public class BranchControllerTest {
                 }
                 """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
+
+    @Test
+    void shouldReturnBranchWhenCodeExists() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                {
+                "code": "001",
+                "name": "BranchSouth"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/branches/001")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("BranchSouth"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenBranchCodeDoesNotExist() throws Exception {
+        mockMvc.perform(get("/branches/001")).andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Filial não encontrada."));
+    }
+
+    @Test
+    void shouldReturnAllBranches() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                {
+                "code": "001",
+                "name": "BranchSouth"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(post("/branches").content("""
+                {
+                "code": "002",
+                "name": "BranchNorth"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/branches")).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2)));
+    }
+
 
 }
