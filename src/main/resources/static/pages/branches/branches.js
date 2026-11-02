@@ -12,7 +12,9 @@ async function getBranches() {
 
     const branches = await response.json();
     const listBranches = document.getElementById("branch-list");
-    listBranches.textContent = "";
+    if (branches.length > 0) {
+        listBranches.textContent = "";
+    }
     for (let i = 0; i < branches.length; i++) {
         const divBranches = document.createElement("div");
 
