@@ -2,9 +2,9 @@ package br.com.almoxarifado.services;
 
 import br.com.almoxarifado.dtos.branch.BranchResponseDTO;
 import br.com.almoxarifado.entities.Branch;
-import br.com.almoxarifado.exceptions.BranchAlreadyExistsException;
-import br.com.almoxarifado.exceptions.BranchInvalidException;
-import br.com.almoxarifado.exceptions.BranchNotFoundException;
+import br.com.almoxarifado.exceptions.conflict.BranchAlreadyExistsException;
+import br.com.almoxarifado.exceptions.invalid.BranchInvalidException;
+import br.com.almoxarifado.exceptions.notfound.BranchNotFoundException;
 import br.com.almoxarifado.repositories.BranchRepository;
 import org.springframework.stereotype.Service;
 
