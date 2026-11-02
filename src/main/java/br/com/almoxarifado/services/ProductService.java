@@ -4,6 +4,7 @@ package br.com.almoxarifado.services;
 import br.com.almoxarifado.dtos.product.ProductResponseDTO;
 import br.com.almoxarifado.entities.Product;
 import br.com.almoxarifado.exceptions.ProductAlreadyExistsException;
+import br.com.almoxarifado.exceptions.ProductInvalidException;
 import br.com.almoxarifado.exceptions.ProductNotFoundException;
 import br.com.almoxarifado.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,21 @@ public class ProductService {
     }
 
     public ProductResponseDTO createProduct(String code, String name) {
+        if (code == null) {
+            throw new ProductInvalidException("O código digitado está inválido.");
+        }
+        if (name == null) {
+            throw new ProductInvalidException("O nome digitado está inválido.");
+        }
+
         String normalizedCode = normalizeCode(code);
         String normalizedName = normalizeName(name);
+        if (normalizedCode.isBlank()) {
+            throw new ProductInvalidException("O código está vazio.");
+        }
+        if (normalizedName.isBlank()) {
+            throw new ProductInvalidException("O nome está vazio.");
+        }
         boolean existsCode = productRepository.existsByCode(normalizedCode);
         if (existsCode) {
             throw new ProductAlreadyExistsException("Esse código já existe.");
@@ -51,7 +65,8 @@ public class ProductService {
     private String normalizeCode(String code) {
         return code.trim().toUpperCase(Locale.ROOT);
     }
-    private String normalizeName(String name){
+
+    private String normalizeName(String name) {
         return name.trim();
     }
 

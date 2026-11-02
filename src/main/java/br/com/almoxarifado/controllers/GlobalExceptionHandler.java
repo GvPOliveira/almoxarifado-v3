@@ -48,7 +48,12 @@ public class GlobalExceptionHandler {
         ErrorResponseDTO error = new ErrorResponseDTO(branchInvalidException.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
-
+    @ExceptionHandler(ProductInvalidException.class)
+    public ResponseEntity<ErrorResponseDTO> handlerProductInvalid(ProductInvalidException
+                                                                         productInvalidException) {
+        ErrorResponseDTO error = new ErrorResponseDTO(productInvalidException.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(BranchNotFoundException.class)
     public ResponseEntity<ErrorResponseDTO> handlerBranchNotFound(BranchNotFoundException
                                                                           branchNotFoundException) {
