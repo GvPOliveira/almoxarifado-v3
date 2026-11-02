@@ -148,5 +148,60 @@ public class BranchControllerTest {
         mockMvc.perform(get("/branches")).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(2)));
     }
 
+    @Test
+    void shouldReturnConflictWhenBranchCodeDiffersOnlyByCaseOrSpaces() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                {
+                  "code": "S01",
+                  "name": "BranchSouth"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(post("/branches").content("""
+                        {
+                          "code": " s01",
+                          "name": "BranchNorth"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Essa filial com esse código já existe."));
+    }
+
+    @Test
+    void shouldReturnBranchWhenFindBranchCodeDiffersOnlyByCase() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                {
+                  "code": "S01",
+                  "name": "BranchSouth"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/branches/s01")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("BranchSouth"));
+    }
+
+    @Test
+    void shouldReturnConflictWhenCreateBranchNameDiffersOnlyByCase() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                        {
+                          "code": "S01",
+                          "name": "BranchSouth"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("BranchSouth"));
+        mockMvc.perform(post("/branches").content("""
+                        {
+                          "code": "d01",
+                          "name": "BRANCHSOUTH"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Essa filial já existe com esse nome."));
+
+        mockMvc.perform(post("/branches").content("""
+                        {
+                          "code": "B01",
+                          "name": "branchsouth"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Essa filial já existe com esse nome."));
+    }
+
 
 }

@@ -9,6 +9,7 @@ import br.com.almoxarifado.repositories.BranchRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class BranchService {
@@ -27,21 +28,20 @@ public class BranchService {
         if (name == null) {
             throw new BranchInvalidException("O nome digitado está inválido.");
         }
-        code = code.trim();
-        name = name.trim();
-
-        if(code.isBlank()){
+        String normalizedCode = normalizeCode(code);
+        String normalizedName = normalizeName(name);
+        if (normalizedCode.isBlank()) {
             throw new BranchInvalidException("O código está vazio.");
         }
-        if(name.isBlank()){
+        if (normalizedName.isBlank()) {
             throw new BranchInvalidException("O nome está vazio.");
         }
 
-        boolean existsBranch = branchRepository.existsByCodeIgnoreCase(code);
+        boolean existsBranch = branchRepository.existsByCode(normalizedCode);
         if (existsBranch) {
             throw new BranchAlreadyExistsException("Essa filial com esse código já existe.");
         }
-        boolean existsBranchName = branchRepository.existsByNameIgnoreCase(name);
+        boolean existsBranchName = branchRepository.existsByNameIgnoreCase(normalizedName);
         if (existsBranchName) {
             throw new BranchAlreadyExistsException("Essa filial já existe com esse nome.");
         }
@@ -50,7 +50,8 @@ public class BranchService {
     }
 
     public BranchResponseDTO findByCode(String code) {
-        Branch branch = branchRepository.findByCodeIgnoreCase(code).orElseThrow(() -> new
+        String normalizedCode = normalizeCode(code);
+        Branch branch = branchRepository.findByCode(normalizedCode).orElseThrow(() -> new
                 BranchNotFoundException("Filial não encontrada."));
         return new BranchResponseDTO(branch.getCode(), branch.getName());
     }
@@ -59,6 +60,14 @@ public class BranchService {
         return branchRepository.findAll().stream()
                 .map(branch -> new BranchResponseDTO(branch.getCode(), branch.getName()))
                 .toList();
+    }
+
+    private String normalizeCode(String code) {
+        return code.trim().toUpperCase(Locale.ROOT);
+    }
+
+    private String normalizeName(String name) {
+        return name.trim();
     }
 
 
