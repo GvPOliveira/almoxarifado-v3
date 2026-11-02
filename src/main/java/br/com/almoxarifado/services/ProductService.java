@@ -3,9 +3,9 @@ package br.com.almoxarifado.services;
 
 import br.com.almoxarifado.dtos.product.ProductResponseDTO;
 import br.com.almoxarifado.entities.Product;
-import br.com.almoxarifado.exceptions.ProductAlreadyExistsException;
-import br.com.almoxarifado.exceptions.ProductInvalidException;
-import br.com.almoxarifado.exceptions.ProductNotFoundException;
+import br.com.almoxarifado.exceptions.conflict.ProductAlreadyExistsException;
+import br.com.almoxarifado.exceptions.invalid.ProductInvalidException;
+import br.com.almoxarifado.exceptions.notfound.ProductNotFoundException;
 import br.com.almoxarifado.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
