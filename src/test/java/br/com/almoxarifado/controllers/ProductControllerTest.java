@@ -111,7 +111,38 @@ public class ProductControllerTest {
 
     @Test
     void shouldReturnNotFoundWhenProductCodeDoesNotExist() throws Exception {
-        mockMvc.perform(get("/products/P200")).andExpect(status().isNotFound()).andExpect(jsonPath("$.message").value("Esse código não existe."));
+        mockMvc.perform(get("/products/P200")).andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Esse código não existe."));
+    }
+
+    @Test
+    void shouldReturnConflictWhenProductCodeDiffersOnlyByCaseOrSpaces() throws Exception {
+        mockMvc.perform(post("/products").content("""
+                {
+                  "code": "P001",
+                  "name": "Parafuso"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(post("/products").content("""
+                        {
+                          "code": " p001",
+                          "name": "Parafuso"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("Esse código já existe."));
+
+    }
+
+    @Test
+    void shouldReturnProductWhenFindProductCodeDiffersOnlyByCase() throws Exception {
+        mockMvc.perform(post("/products").content("""
+                {
+                  "code": "P001",
+                  "name": "Parafuso"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/products/p001")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Parafuso"));
     }
 
 }
