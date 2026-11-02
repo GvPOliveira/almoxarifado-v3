@@ -1,84 +1,209 @@
 # Almoxarifado V3
 
-Sistema de controle de estoque e movimentações de almoxarifado desenvolvido com Java e Spring Boot.
+API REST para controle de estoque de almoxarifado, desenvolvida com **Java 21** e **Spring Boot**.
 
-O projeto tem como objetivo simular regras de negócio de um sistema de almoxarifado, controlando produtos, filiais, entradas, saídas e movimentações de estoque, com foco em boas práticas de desenvolvimento backend e aprendizado do ecossistema Spring.
+O projeto nasceu da minha rotina de trabalho em um almoxarifado: entradas por nota fiscal, saídas por requisição, estoque por filial e histórico de movimentações. Esta é a terceira versão do sistema:
 
-## 🎯 Objetivo
+| Versão | Tecnologia | Repositório |
+| --- | --- | --- |
+| v1 / v2 | Java puro → Java + MySQL com **JDBC** (SQL e mapeamento manual) | [almoxarifado-system](https://github.com/GvPOliveira/almoxarifado-system) |
+| **v3** | **Spring Boot + Spring Data JPA**, exposto como API REST | este repositório |
 
-O sistema deve controlar o estoque dos produtos em cada filial, suas entradas e saídas e o histórico das movimentações realizadas.
+O objetivo da v3 é reconstruir o mesmo domínio com o ecossistema Spring e comparar o que antes eu fazia manualmente com JDBC com o que o JPA/Hibernate passa a fazer.
 
-Este projeto é a terceira versão de um sistema desenvolvido anteriormente utilizando Java e JDBC. Nesta versão, o objetivo é reconstruir a aplicação utilizando o ecossistema Spring, permitindo comparar a persistência manual com uma abordagem baseada em JPA/Hibernate e Spring Data JPA.
+## Status do projeto
 
-## 🛠️ Tecnologias
+🚧 Em desenvolvimento.
+
+| Módulo | Status |
+| --- | --- |
+| Produtos (cadastro, busca, listagem) | ✅ Pronto, com API e testes |
+| Filiais (cadastro, busca, listagem) | ✅ Pronto, com API e testes |
+| Entidades e repositórios do domínio completo (estoque por filial, notas fiscais, fornecedores, requisições, movimentações) | ✅ Mapeados com JPA e testados |
+| Entrada de estoque por nota fiscal | 🔜 Próxima etapa |
+| Atendimento e estorno de requisições | 🔜 Planejado |
+| Histórico de movimentações via API | 🔜 Planejado |
+
+## Tecnologias
 
 - Java 21
-- Spring Boot
-- Spring Data JPA
+- Spring Boot 4 (Spring Web MVC, Spring Data JPA, Bean Validation)
 - Hibernate
-- Spring Web
-- Spring Validation
-- MySQL
+- MySQL (desenvolvimento)
+- H2 em memória (testes)
+- JUnit 5 e MockMvc
 - Maven
-- Git
+- HTML, CSS e JavaScript puro (telas simples para testar a API)
 
-## 📦 Domínio
-
-O sistema possui os seguintes conceitos principais:
-
-- **Product** — produto cadastrado no sistema.
-- **Branch** — filial da empresa.
-- **BranchProduct** — relação entre um produto e uma filial, contendo informações específicas daquela filial, como quantidade em estoque e localização.
-- **Invoice** — nota fiscal utilizada para registrar entradas de materiais.
-- **ProductInvoice** — item de uma nota fiscal, contendo produto, quantidade e destino.
-- **Request** — requisição de materiais realizada por uma filial.
-- **ProductRequest** — item de uma requisição, contendo quantidade solicitada e quantidade atendida.
-- **Movement** — histórico das movimentações realizadas no estoque.
-
-### Destino do item da Nota Fiscal
-
-Os itens de uma nota fiscal podem possuir diferentes destinos:
-
-- `STOCK` — o item movimenta o estoque e gera uma entrada.
-- `DIRECT` — o item é apenas registrado e não movimenta o estoque.
-
-### Tipos de movimentação
-
-- `ENTRY` — entrada de estoque.
-- `OUTPUT` — saída de estoque.
-- `REVERSAL` — estorno de uma movimentação anterior.
-
-## 📋 Principais regras de negócio
-
-Entre as regras previstas para o sistema estão:
-
-- Um produto possui um código único.
-- Uma filial possui um código único.
-- Um produto pode existir em várias filiais.
-- Um produto pode possuir quantidade e localização diferentes em cada filial.
-- A relação entre produto e filial é representada por `BranchProduct`.
-- Uma filial pode receber notas fiscais.
-- Uma nota fiscal pertence a uma única filial.
-- Uma nota fiscal pode possuir vários produtos.
-- O número da nota fiscal é único em conjunto com o fornecedor.
-- Uma requisição pertence a uma única filial.
-- Uma requisição pode possuir vários produtos.
-- A quantidade atendida não pode ser superior à quantidade solicitada.
-- As movimentações de estoque são registradas para manter o histórico das operações.
-- Estornos não devem apagar a movimentação original, mas registrar uma nova movimentação de reversão.
-
-## 🏗️ Arquitetura
-
-A aplicação será construída seguindo uma separação de responsabilidades entre as principais camadas:
+## Arquitetura
 
 ```text
-Controller
+Controller   → recebe a requisição HTTP, valida a entrada e devolve DTOs
     ↓
-Service
+Service      → regras de negócio (normalização, duplicidade, validações)
     ↓
-Repository
-    ↓
-JPA / Hibernate
+Repository   → Spring Data JPA
     ↓
 MySQL
 ```
+
+Decisões principais:
+
+- **DTOs separados das entidades.** A API recebe `*CreateDTO` e devolve `*ResponseDTO`. As entidades JPA nunca são expostas diretamente, o que evita vazar campos internos (como o `id`) e desacopla o contrato da API do banco.
+- **Injeção de dependência por construtor** nos controllers e services.
+- **Validação em duas camadas.** Bean Validation (`@NotBlank`) no DTO barra a entrada inválida logo na chegada; o service revalida de forma defensiva, porque também pode ser chamado por outras partes do sistema.
+- **Códigos normalizados.** Códigos de produto e filial são salvos sem espaços nas pontas e em maiúsculas. Assim, `" abc01 "` e `"ABC01"` são tratados como o mesmo código, evitando duplicidade.
+
+## Tratamento de erros
+
+As exceções de negócio seguem uma hierarquia, e um `@RestControllerAdvice` (`GlobalExceptionHandler`) converte cada tipo no status HTTP correto:
+
+| Exceção base | Exemplos | Status |
+| --- | --- | --- |
+| `NotFoundException` | `ProductNotFoundException`, `BranchNotFoundException` | `404 Not Found` |
+| `ConflictException` | `ProductAlreadyExistsException`, `BranchAlreadyExistsException` | `409 Conflict` |
+| `InvalidException` | `ProductInvalidException`, `BranchInvalidException` | `400 Bad Request` |
+| Falha de `@Valid` no corpo da requisição | campo vazio ou ausente | `400 Bad Request` |
+| Qualquer outra exceção | erro inesperado (registrado em log) | `500 Internal Server Error` |
+
+Com isso, um novo erro de "não encontrado" só precisa estender `NotFoundException` para já retornar 404, sem nenhum `try/catch` nos controllers.
+
+Formato das respostas de erro:
+
+```json
+// 404, 409 ou 400 (regra de negócio)
+{ "message": "Esse código já existe." }
+
+// 400 (validação de campos)
+{ "errors": { "name": "<mensagem da validação>" } }
+```
+
+## Endpoints
+
+### Produtos — `/products`
+
+| Método | Rota | Descrição | Sucesso | Erros |
+| --- | --- | --- | --- | --- |
+| `POST` | `/products` | Cadastra um produto | `201` | `400`, `409` |
+| `GET` | `/products/{code}` | Busca pelo código (sem diferenciar maiúsculas/minúsculas) | `200` | `404` |
+| `GET` | `/products` | Lista todos | `200` | — |
+
+```http
+POST /products
+Content-Type: application/json
+
+{ "code": "cab-001", "name": "Cabo de rede Cat6" }
+```
+
+```json
+// 201 Created
+{ "code": "CAB-001", "name": "Cabo de rede Cat6" }
+```
+
+### Filiais — `/branches`
+
+| Método | Rota | Descrição | Sucesso | Erros |
+| --- | --- | --- | --- | --- |
+| `POST` | `/branches` | Cadastra uma filial (código e nome únicos) | `201` | `400`, `409` |
+| `GET` | `/branches/{code}` | Busca pelo código | `200` | `404` |
+| `GET` | `/branches` | Lista todas | `200` | — |
+
+```http
+POST /branches
+Content-Type: application/json
+
+{ "code": "sp01", "name": "Filial São Paulo" }
+```
+
+```json
+// 201 Created
+{ "code": "SP01", "name": "Filial São Paulo" }
+```
+
+## Domínio
+
+- **Product**: produto, com código único.
+- **Branch**: filial, com código e nome únicos.
+- **BranchProduct**: um produto dentro de uma filial, com quantidade em estoque e localização (único por filial + produto).
+- **Supplier**: fornecedor, identificado pelo CNPJ.
+- **Invoice / ProductInvoice**: nota fiscal de entrada e seus itens. O número da nota é único por fornecedor.
+- **Request / ProductRequest**: requisição de saída e seus itens, com quantidade solicitada e atendida.
+- **Movement**: histórico de movimentações (`ENTRY`, `OUTPUT`, `REVERSAL`).
+
+Itens de nota fiscal podem ter destino `STOCK` (movimenta o estoque) ou `DIRECT` (apenas registrado, sem entrada no estoque).
+
+Principais regras de negócio:
+
+- Um produto pode existir em várias filiais, com quantidade e localização próprias em cada uma.
+- A quantidade atendida de uma requisição não pode ser maior que a solicitada.
+- Toda movimentação de estoque gera um registro de histórico.
+- Um estorno não apaga a movimentação original: registra uma nova movimentação do tipo `REVERSAL`.
+
+## Testes
+
+Os testes rodam com o perfil `test`, que usa um **banco H2 em memória**. Não é preciso ter MySQL instalado para executá-los, e eles não alteram o banco de desenvolvimento.
+
+- **Testes de API (MockMvc)**: cadastro, busca e listagem de produtos e filiais, cobrindo os status 201, 200, 400, 404 e 409, além de casos de borda como códigos que diferem só por maiúsculas ou espaços.
+- **Testes de repositório**: consultas do Spring Data JPA para filiais, estoque por filial, fornecedores, notas fiscais, requisições e movimentações, incluindo os cenários de "não encontrado".
+
+```bash
+./mvnw test
+```
+
+## Como executar
+
+**Pré-requisitos:** Java 21 e MySQL.
+
+1. Crie o banco de dados:
+
+   ```sql
+   CREATE DATABASE almoxarifado_v3;
+   ```
+
+2. Defina as credenciais do MySQL como variáveis de ambiente (elas não ficam no código):
+
+   ```bash
+   # Linux / macOS
+   export DB_USERNAME=seu_usuario
+   export DB_PASSWORD=sua_senha
+
+   # Windows (PowerShell)
+   $env:DB_USERNAME="seu_usuario"
+   $env:DB_PASSWORD="sua_senha"
+   ```
+
+3. Suba a aplicação (as tabelas são criadas automaticamente pelo Hibernate):
+
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+4. Acesse `http://localhost:8080` para usar as telas de teste, ou chame os endpoints com Postman/Insomnia.
+
+## Estrutura
+
+```text
+src/main/java/br/com/almoxarifado
+├── controllers    # endpoints REST e GlobalExceptionHandler
+├── services       # regras de negócio
+├── repositories   # interfaces Spring Data JPA
+├── entities       # entidades JPA
+├── dtos           # contratos de entrada e saída da API
+├── exceptions     # hierarquia: notfound, conflict, invalid
+└── enums          # MovementType, OriginType, Destination
+```
+
+## O que mudou do JDBC (v2) para o Spring (v3)
+
+| Na v2 (JDBC) | Na v3 (Spring) |
+| --- | --- |
+| `Connection`, `PreparedStatement` e SQL escritos à mão | Repositórios Spring Data JPA (`findByCode`, `existsByCode`…) |
+| Reconstrução manual dos objetos percorrendo o `ResultSet` linha a linha | Relacionamentos mapeados com `@ManyToOne` / `@OneToMany` |
+| Script SQL para criar as tabelas | Tabelas geradas a partir das entidades |
+| Exceções de negócio tratadas por quem chamava | Exceções convertidas em status HTTP pelo `GlobalExceptionHandler` |
+
+Ter feito a persistência manualmente na v2 me ajudou a entender o que o JPA faz por baixo dos panos.
+
+## Autor
+
+**Gabriel Vinicius**, estudante de Análise e Desenvolvimento de Sistemas (SENAC SP).
