@@ -28,7 +28,7 @@ public class BranchRepositoryTest {
         assertNotNull(savedBranch.getId());
 
         Optional<Branch> foundBranch =
-                branchRepository.findByCodeIgnoreCase(savedBranch.getCode());
+                branchRepository.findByCode(savedBranch.getCode());
 
         assertTrue(foundBranch.isPresent());
         assertEquals("001", foundBranch.get().getCode());
