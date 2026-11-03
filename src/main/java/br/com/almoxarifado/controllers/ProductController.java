@@ -23,7 +23,7 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProductResponseDTO createProduct(@RequestBody @Valid ProductCreateDTO productCreateDTO) {
-        return productService.createProduct(productCreateDTO.getCode(), productCreateDTO.getName());
+        return productService.createProduct(productCreateDTO.code(), productCreateDTO.name());
     }
 
     @GetMapping("/{code}")
