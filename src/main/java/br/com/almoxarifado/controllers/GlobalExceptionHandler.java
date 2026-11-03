@@ -1,4 +1,5 @@
 package br.com.almoxarifado.controllers;
+
 import br.com.almoxarifado.dtos.common.ErrorResponseDTO;
 import br.com.almoxarifado.dtos.common.ValidationErrorResponseDTO;
 import br.com.almoxarifado.exceptions.invalid.InvalidException;
@@ -6,6 +7,7 @@ import br.com.almoxarifado.exceptions.conflict.ConflictException;
 import br.com.almoxarifado.exceptions.notfound.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -25,7 +27,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
-
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -61,6 +62,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                                                                     notFoundException) {
         ErrorResponseDTO error = new ErrorResponseDTO(notFoundException.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handlerDataIntegrityViolation(DataIntegrityViolationException dataException) {
+        log.warn("Violação de integridade de dados", dataException);
+        ErrorResponseDTO error = new ErrorResponseDTO("Os dados enviados conflitam com informações já cadastradas.");
+        return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
