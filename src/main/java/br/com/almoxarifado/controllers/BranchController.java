@@ -22,7 +22,7 @@ public class BranchController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public BranchResponseDTO saveBranch(@RequestBody @Valid BranchCreateDTO branchCreateDTO) {
-        return branchService.createBranch(branchCreateDTO.getCode(), branchCreateDTO.getName());
+        return branchService.createBranch(branchCreateDTO.code(), branchCreateDTO.name());
     }
 
     @GetMapping("/{code}")
