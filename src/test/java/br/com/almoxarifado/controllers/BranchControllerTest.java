@@ -53,7 +53,7 @@ public class BranchControllerTest {
                 "name": "BranchWest"
                 }
                 """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict()).andExpect(jsonPath(
-                "$.message").value("Essa filial com esse código já existe."));
+                "$.message").value("Já existe uma filial com o código '001'."));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class BranchControllerTest {
                 "name": " BranchSouth"
                 }
                 """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict()).andExpect(jsonPath(
-                "$.message").value("Essa filial já existe com esse nome."));
+                "$.message").value("Já existe uma filial com o nome 'BranchSouth'."));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class BranchControllerTest {
     @Test
     void shouldReturnNotFoundWhenBranchCodeDoesNotExist() throws Exception {
         mockMvc.perform(get("/branches/001")).andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Filial não encontrada."));
+                .andExpect(jsonPath("$.message").value("Nenhuma filial encontrada com o código '001'."));
     }
 
     @Test
@@ -162,7 +162,7 @@ public class BranchControllerTest {
                           "name": "BranchNorth"
                         }
                         """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("Essa filial com esse código já existe."));
+                .andExpect(jsonPath("$.message").value("Já existe uma filial com o código 'S01'."));
     }
 
     @Test
@@ -192,7 +192,7 @@ public class BranchControllerTest {
                           "name": "BRANCHSOUTH"
                         }
                         """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("Essa filial já existe com esse nome."));
+                .andExpect(jsonPath("$.message").value("Já existe uma filial com o nome 'BRANCHSOUTH'."));
 
         mockMvc.perform(post("/branches").content("""
                         {
@@ -200,8 +200,21 @@ public class BranchControllerTest {
                           "name": "branchsouth"
                         }
                         """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("Essa filial já existe com esse nome."));
+                .andExpect(jsonPath("$.message").value("Já existe uma filial com o nome 'branchsouth'."));
     }
 
+
+    @Test
+    void shouldPersistNormalizedCodeAndNameWhenCreatingBranch() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                {
+                  "code": " s01",
+                  "name": " BranchSouth"
+                }
+                """).contentType(MediaType.APPLICATION_JSON));
+        mockMvc.perform(get("/branches/S01")).andExpect(status().isOk()).andExpect(
+                jsonPath("$.name").value("BranchSouth")
+        ).andExpect(jsonPath("$.code").value("S01"));
+    }
 
 }
