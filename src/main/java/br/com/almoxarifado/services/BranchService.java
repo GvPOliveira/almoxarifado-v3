@@ -22,37 +22,33 @@ public class BranchService {
 
 
     public BranchResponseDTO createBranch(String code, String name) {
-        if (code == null) {
-            throw new BranchInvalidException("O código digitado está inválido.");
+        if (code == null || code.isBlank()) {
+            throw new BranchInvalidException("O código da filial é obrigatório.");
         }
-        if (name == null) {
-            throw new BranchInvalidException("O nome digitado está inválido.");
+        if (name == null || name.isBlank()) {
+            throw new BranchInvalidException("O nome da filial é obrigatório.");
         }
         String normalizedCode = normalizeCode(code);
         String normalizedName = normalizeName(name);
-        if (normalizedCode.isBlank()) {
-            throw new BranchInvalidException("O código está vazio.");
-        }
-        if (normalizedName.isBlank()) {
-            throw new BranchInvalidException("O nome está vazio.");
-        }
 
         boolean existsBranch = branchRepository.existsByCode(normalizedCode);
         if (existsBranch) {
-            throw new BranchAlreadyExistsException("Essa filial com esse código já existe.");
+            throw new BranchAlreadyExistsException(
+                    "Já existe uma filial com o código '%s'.".formatted(normalizedCode));
         }
         boolean existsBranchName = branchRepository.existsByNameIgnoreCase(normalizedName);
         if (existsBranchName) {
-            throw new BranchAlreadyExistsException("Essa filial já existe com esse nome.");
+            throw new BranchAlreadyExistsException(
+                    "Já existe uma filial com o nome '%s'.".formatted(normalizedName));
         }
-        Branch savedBranch = branchRepository.save(new Branch(code, name));
+        Branch savedBranch = branchRepository.save(new Branch(normalizedCode, normalizedName));
         return new BranchResponseDTO(savedBranch.getCode(), savedBranch.getName());
     }
 
     public BranchResponseDTO findByCode(String code) {
         String normalizedCode = normalizeCode(code);
         Branch branch = branchRepository.findByCode(normalizedCode).orElseThrow(() -> new
-                BranchNotFoundException("Filial não encontrada."));
+                BranchNotFoundException("Nenhuma filial encontrada com o código '%s'.".formatted(normalizedCode)));
         return new BranchResponseDTO(branch.getCode(), branch.getName());
     }
 
