@@ -1,20 +1,10 @@
 package br.com.almoxarifado.dtos.common;
 
+
 import java.util.Map;
 
-public class ValidationErrorResponseDTO{
-    private Map<String, String> errors;
-
-    public Map<String, String> getErrors() {
-        return errors;
+public record ValidationErrorResponseDTO(Map<String, String> errors) {
+   public ValidationErrorResponseDTO {
+       errors = Map.copyOf(errors);
     }
-
-    public void setErrors(Map<String, String> errors) {
-        this.errors = errors;
-    }
-
-    public ValidationErrorResponseDTO(Map<String, String> errors){
-        this.errors = errors;
-    }
-
 }

@@ -1,19 +1,5 @@
 package br.com.almoxarifado.dtos.common;
 
-public class ErrorResponseDTO {
-   private String message;
+public record ErrorResponseDTO(String message) {
 
-   public ErrorResponseDTO(String message){
-       this.message = message;
-   }
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public ErrorResponseDTO() {
-    }
 }
