@@ -55,7 +55,7 @@ public class ProductControllerTest {
                             "name": "Product test"
                         }
                         """).contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isConflict()).andExpect(jsonPath("$.message").value("Esse código já existe."));
+        ).andExpect(status().isConflict()).andExpect(jsonPath("$.message").value("Já existe um produto com o código 'P001'."));
 
     }
 
@@ -112,7 +112,7 @@ public class ProductControllerTest {
     @Test
     void shouldReturnNotFoundWhenProductCodeDoesNotExist() throws Exception {
         mockMvc.perform(get("/products/P200")).andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("Esse código não existe."));
+                .andExpect(jsonPath("$.message").value("Nenhum produto encontrado com o código 'P200'."));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ProductControllerTest {
                           "name": "Parafuso"
                         }
                         """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
-                .andExpect(jsonPath("$.message").value("Esse código já existe."));
+                .andExpect(jsonPath("$.message").value("Já existe um produto com o código 'P001'."));
 
     }
 
