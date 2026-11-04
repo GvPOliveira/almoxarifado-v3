@@ -25,29 +25,25 @@ public class ProductService {
 
     public ProductResponseDTO getProductByCode(String code) {
         String normalizedCode = normalizeCode(code);
-        Product product = productRepository.findByCode(normalizedCode).orElseThrow(() -> new ProductNotFoundException("Esse código não existe."));
+        Product product = productRepository.findByCode(normalizedCode).orElseThrow(() -> new ProductNotFoundException(
+                "Nenhum produto encontrado com o código '%s'.".formatted(normalizedCode)));
         return new ProductResponseDTO(product.getCode(), product.getName());
     }
 
     public ProductResponseDTO createProduct(String code, String name) {
-        if (code == null) {
-            throw new ProductInvalidException("O código digitado está inválido.");
+        if (code == null || code.isBlank()) {
+            throw new ProductInvalidException("O código do produto é obrigatório.");
         }
-        if (name == null) {
-            throw new ProductInvalidException("O nome digitado está inválido.");
+        if (name == null || name.isBlank()) {
+            throw new ProductInvalidException("O nome do produto é obrigatório.");
         }
 
         String normalizedCode = normalizeCode(code);
         String normalizedName = normalizeName(name);
-        if (normalizedCode.isBlank()) {
-            throw new ProductInvalidException("O código está vazio.");
-        }
-        if (normalizedName.isBlank()) {
-            throw new ProductInvalidException("O nome está vazio.");
-        }
         boolean existsCode = productRepository.existsByCode(normalizedCode);
         if (existsCode) {
-            throw new ProductAlreadyExistsException("Esse código já existe.");
+            throw new ProductAlreadyExistsException(
+                    "Já existe um produto com o código '%s'.".formatted(normalizedCode));
         }
         Product product = new Product(normalizedCode, normalizedName);
         Product savedProduct = productRepository.save(product);
