@@ -1,7 +1,7 @@
 package br.com.almoxarifado.controllers;
 
-import br.com.almoxarifado.dtos.branch.BranchCreateDTO;
-import br.com.almoxarifado.dtos.branch.BranchResponseDTO;
+import br.com.almoxarifado.dtos.branch.BranchCreateDto;
+import br.com.almoxarifado.dtos.branch.BranchResponseDto;
 import br.com.almoxarifado.services.BranchService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,17 +21,17 @@ public class BranchController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BranchResponseDTO saveBranch(@RequestBody @Valid BranchCreateDTO branchCreateDTO) {
-        return branchService.createBranch(branchCreateDTO.code(), branchCreateDTO.name());
+    public BranchResponseDto saveBranch(@RequestBody @Valid BranchCreateDto branchCreateDto) {
+        return branchService.createBranch(branchCreateDto.code(), branchCreateDto.name());
     }
 
     @GetMapping("/{code}")
-    public BranchResponseDTO findByCode(@PathVariable String code) {
+    public BranchResponseDto findByCode(@PathVariable String code) {
         return branchService.findByCode(code);
     }
 
     @GetMapping
-    public List<BranchResponseDTO> findAll() {
+    public List<BranchResponseDto> findAll() {
         return branchService.findAll();
     }
 

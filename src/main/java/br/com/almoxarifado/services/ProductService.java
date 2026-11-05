@@ -1,7 +1,7 @@
 package br.com.almoxarifado.services;
 
 
-import br.com.almoxarifado.dtos.product.ProductResponseDTO;
+import br.com.almoxarifado.dtos.product.ProductResponseDto;
 import br.com.almoxarifado.entities.Product;
 import br.com.almoxarifado.exceptions.conflict.ProductAlreadyExistsException;
 import br.com.almoxarifado.exceptions.invalid.ProductInvalidException;
@@ -23,14 +23,14 @@ public class ProductService {
     }
 
 
-    public ProductResponseDTO getProductByCode(String code) {
+    public ProductResponseDto getProductByCode(String code) {
         String normalizedCode = normalizeCode(code);
         Product product = productRepository.findByCode(normalizedCode).orElseThrow(() -> new ProductNotFoundException(
                 "Nenhum produto encontrado com o código '%s'.".formatted(normalizedCode)));
-        return new ProductResponseDTO(product.getCode(), product.getName());
+        return new ProductResponseDto(product.getCode(), product.getName());
     }
 
-    public ProductResponseDTO createProduct(String code, String name) {
+    public ProductResponseDto createProduct(String code, String name) {
         if (code == null || code.isBlank()) {
             throw new ProductInvalidException("O código do produto é obrigatório.");
         }
@@ -47,13 +47,13 @@ public class ProductService {
         }
         Product product = new Product(normalizedCode, normalizedName);
         Product savedProduct = productRepository.save(product);
-        return new ProductResponseDTO(savedProduct.getCode(), savedProduct.getName());
+        return new ProductResponseDto(savedProduct.getCode(), savedProduct.getName());
     }
 
-    public List<ProductResponseDTO> getProducts() {
+    public List<ProductResponseDto> getProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(p -> new ProductResponseDTO(p.getCode(), p.getName()))
+                .map(p -> new ProductResponseDto(p.getCode(), p.getName()))
                 .toList();
     }
 
