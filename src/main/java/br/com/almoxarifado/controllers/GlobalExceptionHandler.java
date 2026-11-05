@@ -1,7 +1,7 @@
 package br.com.almoxarifado.controllers;
 
-import br.com.almoxarifado.dtos.common.ErrorResponseDTO;
-import br.com.almoxarifado.dtos.common.ValidationErrorResponseDTO;
+import br.com.almoxarifado.dtos.common.ErrorResponseDto;
+import br.com.almoxarifado.dtos.common.ValidationErrorResponseDto;
 import br.com.almoxarifado.exceptions.invalid.InvalidException;
 import br.com.almoxarifado.exceptions.conflict.ConflictException;
 import br.com.almoxarifado.exceptions.notfound.NotFoundException;
@@ -37,44 +37,44 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             String errorReason = fieldError.getDefaultMessage();
             errors.put(errorName, errorReason);
         }
-        ValidationErrorResponseDTO validationErrorResponseDTO = new ValidationErrorResponseDTO(errors);
+        ValidationErrorResponseDto validationErrorResponseDto = new ValidationErrorResponseDto(errors);
         ResponseEntity<Object> responseEntity =
-                new ResponseEntity<>(validationErrorResponseDTO, HttpStatus.BAD_REQUEST);
+                new ResponseEntity<>(validationErrorResponseDto, HttpStatus.BAD_REQUEST);
         return responseEntity;
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<ErrorResponseDTO> handlerConflict(ConflictException
+    public ResponseEntity<ErrorResponseDto> handlerConflict(ConflictException
                                                                     conflictException) {
-        ErrorResponseDTO error = new ErrorResponseDTO(conflictException.getMessage());
+        ErrorResponseDto error = new ErrorResponseDto(conflictException.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(InvalidException.class)
-    public ResponseEntity<ErrorResponseDTO> handlerInvalid(InvalidException
+    public ResponseEntity<ErrorResponseDto> handlerInvalid(InvalidException
                                                                    invalidException) {
-        ErrorResponseDTO error = new ErrorResponseDTO(invalidException.getMessage());
+        ErrorResponseDto error = new ErrorResponseDto(invalidException.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponseDTO> handlerNotFound(NotFoundException
+    public ResponseEntity<ErrorResponseDto> handlerNotFound(NotFoundException
                                                                     notFoundException) {
-        ErrorResponseDTO error = new ErrorResponseDTO(notFoundException.getMessage());
+        ErrorResponseDto error = new ErrorResponseDto(notFoundException.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponseDTO> handlerDataIntegrityViolation(DataIntegrityViolationException dataException) {
+    public ResponseEntity<ErrorResponseDto> handlerDataIntegrityViolation(DataIntegrityViolationException dataException) {
         log.warn("Violação de integridade de dados", dataException);
-        ErrorResponseDTO error = new ErrorResponseDTO("Os dados enviados conflitam com informações já cadastradas.");
+        ErrorResponseDto error = new ErrorResponseDto("Os dados enviados conflitam com informações já cadastradas.");
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponseDTO> handlerException(Exception exception) {
+    public ResponseEntity<ErrorResponseDto> handlerException(Exception exception) {
         log.error(exception.getMessage(), exception);
-        ErrorResponseDTO error = new ErrorResponseDTO("Erro interno, tente novamente!");
+        ErrorResponseDto error = new ErrorResponseDto("Erro interno, tente novamente!");
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

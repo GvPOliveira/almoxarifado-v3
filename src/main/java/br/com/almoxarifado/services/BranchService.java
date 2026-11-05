@@ -1,6 +1,6 @@
 package br.com.almoxarifado.services;
 
-import br.com.almoxarifado.dtos.branch.BranchResponseDTO;
+import br.com.almoxarifado.dtos.branch.BranchResponseDto;
 import br.com.almoxarifado.entities.Branch;
 import br.com.almoxarifado.exceptions.conflict.BranchAlreadyExistsException;
 import br.com.almoxarifado.exceptions.invalid.BranchInvalidException;
@@ -21,7 +21,7 @@ public class BranchService {
     }
 
 
-    public BranchResponseDTO createBranch(String code, String name) {
+    public BranchResponseDto createBranch(String code, String name) {
         if (code == null || code.isBlank()) {
             throw new BranchInvalidException("O código da filial é obrigatório.");
         }
@@ -42,19 +42,19 @@ public class BranchService {
                     "Já existe uma filial com o nome '%s'.".formatted(normalizedName));
         }
         Branch savedBranch = branchRepository.save(new Branch(normalizedCode, normalizedName));
-        return new BranchResponseDTO(savedBranch.getCode(), savedBranch.getName());
+        return new BranchResponseDto(savedBranch.getCode(), savedBranch.getName());
     }
 
-    public BranchResponseDTO findByCode(String code) {
+    public BranchResponseDto findByCode(String code) {
         String normalizedCode = normalizeCode(code);
         Branch branch = branchRepository.findByCode(normalizedCode).orElseThrow(() -> new
                 BranchNotFoundException("Nenhuma filial encontrada com o código '%s'.".formatted(normalizedCode)));
-        return new BranchResponseDTO(branch.getCode(), branch.getName());
+        return new BranchResponseDto(branch.getCode(), branch.getName());
     }
 
-    public List<BranchResponseDTO> findAll() {
+    public List<BranchResponseDto> findAll() {
         return branchRepository.findAll().stream()
-                .map(branch -> new BranchResponseDTO(branch.getCode(), branch.getName()))
+                .map(branch -> new BranchResponseDto(branch.getCode(), branch.getName()))
                 .toList();
     }
 
