@@ -5,6 +5,7 @@ import br.com.almoxarifado.entities.Branch;
 import br.com.almoxarifado.exceptions.conflict.BranchAlreadyExistsException;
 import br.com.almoxarifado.exceptions.invalid.BranchInvalidException;
 import br.com.almoxarifado.exceptions.notfound.BranchNotFoundException;
+import br.com.almoxarifado.mappers.BranchMapper;
 import br.com.almoxarifado.repositories.BranchRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,11 @@ import java.util.Locale;
 public class BranchService {
 
     private final BranchRepository branchRepository;
+    private final BranchMapper branchMapper;
 
-    public BranchService(BranchRepository branchRepository) {
+    public BranchService(BranchRepository branchRepository, BranchMapper branchMapper) {
         this.branchRepository = branchRepository;
+        this.branchMapper = branchMapper;
     }
 
 
@@ -42,19 +45,20 @@ public class BranchService {
                     "Já existe uma filial com o nome '%s'.".formatted(normalizedName));
         }
         Branch savedBranch = branchRepository.save(new Branch(normalizedCode, normalizedName));
-        return new BranchResponseDto(savedBranch.getCode(), savedBranch.getName());
+        return branchMapper.toDto(savedBranch);
     }
 
     public BranchResponseDto findByCode(String code) {
         String normalizedCode = normalizeCode(code);
         Branch branch = branchRepository.findByCode(normalizedCode).orElseThrow(() -> new
                 BranchNotFoundException("Nenhuma filial encontrada com o código '%s'.".formatted(normalizedCode)));
-        return new BranchResponseDto(branch.getCode(), branch.getName());
+        return branchMapper.toDto(branch);
     }
 
     public List<BranchResponseDto> findAll() {
-        return branchRepository.findAll().stream()
-                .map(branch -> new BranchResponseDto(branch.getCode(), branch.getName()))
+        return branchRepository.findAll()
+                .stream()
+                .map(branchMapper::toDto)
                 .toList();
     }
 
