@@ -6,6 +6,7 @@ import br.com.almoxarifado.entities.Product;
 import br.com.almoxarifado.exceptions.conflict.ProductAlreadyExistsException;
 import br.com.almoxarifado.exceptions.invalid.ProductInvalidException;
 import br.com.almoxarifado.exceptions.notfound.ProductNotFoundException;
+import br.com.almoxarifado.mappers.ProductMapper;
 import br.com.almoxarifado.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,11 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    private final ProductMapper productMapper;
+
+    public ProductService(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
 
@@ -27,7 +31,7 @@ public class ProductService {
         String normalizedCode = normalizeCode(code);
         Product product = productRepository.findByCode(normalizedCode).orElseThrow(() -> new ProductNotFoundException(
                 "Nenhum produto encontrado com o código '%s'.".formatted(normalizedCode)));
-        return new ProductResponseDto(product.getCode(), product.getName());
+        return productMapper.toDto(product);
     }
 
     public ProductResponseDto createProduct(String code, String name) {
@@ -47,13 +51,13 @@ public class ProductService {
         }
         Product product = new Product(normalizedCode, normalizedName);
         Product savedProduct = productRepository.save(product);
-        return new ProductResponseDto(savedProduct.getCode(), savedProduct.getName());
+        return productMapper.toDto(savedProduct);
     }
 
     public List<ProductResponseDto> getProducts() {
         return productRepository.findAll()
                 .stream()
-                .map(p -> new ProductResponseDto(p.getCode(), p.getName()))
+                .map(productMapper::toDto)
                 .toList();
     }
 
