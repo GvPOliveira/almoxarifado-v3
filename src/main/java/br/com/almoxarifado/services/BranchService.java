@@ -48,12 +48,17 @@ public class BranchService {
         return branchMapper.toDto(savedBranch);
     }
 
-    public BranchResponseDto findByCode(String code) {
-        String normalizedCode = normalizeCode(code);
-        Branch branch = branchRepository.findByCode(normalizedCode).orElseThrow(() -> new
-                BranchNotFoundException("Nenhuma filial encontrada com o código '%s'.".formatted(normalizedCode)));
+    public BranchResponseDto findBranchByCode(String code) {
+        Branch branch = findBranchEntityByCode(code);
         return branchMapper.toDto(branch);
     }
+
+    public Branch findBranchEntityByCode(String code) {
+        String normalizedCode = normalizeCode(code);
+        return branchRepository.findByCode(normalizedCode).orElseThrow(() -> new
+                BranchNotFoundException("Nenhuma filial encontrada com o código '%s'.".formatted(normalizedCode)));
+    }
+
 
     public List<BranchResponseDto> findAll() {
         return branchRepository.findAll()

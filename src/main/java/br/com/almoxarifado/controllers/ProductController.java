@@ -27,8 +27,8 @@ public class ProductController {
     }
 
     @GetMapping("/{code}")
-    public ProductResponseDto getProductByCode(@PathVariable String code) {
-        return productService.getProductByCode(code);
+    public ProductResponseDto findProductByCode(@PathVariable String code) {
+        return productService.findProductByCode(code);
     }
 
 

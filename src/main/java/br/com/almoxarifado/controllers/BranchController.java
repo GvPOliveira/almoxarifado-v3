@@ -26,8 +26,8 @@ public class BranchController {
     }
 
     @GetMapping("/{code}")
-    public BranchResponseDto findByCode(@PathVariable String code) {
-        return branchService.findByCode(code);
+    public BranchResponseDto findBranchByCode(@PathVariable String code) {
+        return branchService.findBranchByCode(code);
     }
 
     @GetMapping
