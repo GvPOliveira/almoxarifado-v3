@@ -31,13 +31,12 @@ public class BranchProductRepositoryTest {
         Product savedProduct = productRepository.save(product);
         Branch branch = new Branch("001", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
-        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct,
-                200, "CORREDOR 2");
+        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, "CORREDOR 2");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
         assertNotNull(savedBranchProduct);
         assertEquals("P003", savedBranchProduct.getProduct().getCode());
         assertEquals("001", savedBranchProduct.getBranch().getCode());
-        assertEquals(200, savedBranchProduct.getQuantity());
+        assertEquals(0, savedBranchProduct.getQuantity());
     }
 
     @Test
@@ -46,7 +45,7 @@ public class BranchProductRepositoryTest {
         Product savedProduct = productRepository.save(product);
         Branch branch = new Branch("001", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
-        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, 200, "CORREDOR 2");
+        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, "CORREDOR 2");
         branchProductRepository.save(branchProduct);
         Optional<BranchProduct> foundBranchProduct = branchProductRepository.findByBranchIdAndProductId(
                 savedBranch.getId(), savedProduct.getId()
@@ -55,7 +54,7 @@ public class BranchProductRepositoryTest {
         assertTrue(foundBranchProduct.isPresent());
         assertEquals("P002", foundBranchProduct.get().getProduct().getCode());
         assertEquals("001", foundBranchProduct.get().getBranch().getCode());
-        assertEquals(200, foundBranchProduct.get().getQuantity());
+        assertEquals(0, foundBranchProduct.get().getQuantity());
 
     }
 

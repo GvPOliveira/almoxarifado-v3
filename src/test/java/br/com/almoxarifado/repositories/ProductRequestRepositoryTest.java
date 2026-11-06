@@ -37,7 +37,7 @@ public class ProductRequestRepositoryTest {
         Product savedProduct = productRepository.save(product);
         Branch branch = new Branch("003", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
-        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, 300, "P-030");
+        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, "P-030");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
         Request request = new Request("Request", savedBranch);
         Request savedRequest = requestRepository.save(request);
@@ -53,7 +53,7 @@ public class ProductRequestRepositoryTest {
         assertEquals("P035", foundProductRequest.get().getBranchProduct().getProduct().getCode());
         assertEquals("003", foundProductRequest.get().getBranchProduct().getBranch().getCode());
         assertEquals("Request", foundProductRequest.get().getRequest().getNumber());
-        assertEquals(300, foundProductRequest.get().getBranchProduct().getQuantity());
+        assertEquals(0, foundProductRequest.get().getBranchProduct().getQuantity());
 
 
     }
@@ -63,7 +63,7 @@ public class ProductRequestRepositoryTest {
         Product savedProduct = productRepository.save(product);
         Branch branch = new Branch("003", "Branch South");
         Branch savedBranch = branchRepository.save(branch);
-        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, 300, "P-030");
+        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, "P-030");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
         Request request = new Request("Request", savedBranch);
         Request savedRequest = requestRepository.save(request);

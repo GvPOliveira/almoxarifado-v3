@@ -35,10 +35,10 @@ public class BranchProduct {
     public BranchProduct() {
     }
 
-    public BranchProduct(Branch branch, Product product, int quantity, String location) {
+    public BranchProduct(Branch branch, Product product, String location) {
         this.branch = branch;
         this.product = product;
-        this.quantity = quantity;
+        this.quantity = 0;
         this.location = location;
     }
 

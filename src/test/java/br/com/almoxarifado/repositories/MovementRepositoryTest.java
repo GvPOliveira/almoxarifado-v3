@@ -43,7 +43,7 @@ public class MovementRepositoryTest {
         Branch branch = new Branch("002", "Branch West");
         Branch savedBranch = branchRepository.save(branch);
 
-        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, 200, "Prateleiro 30");
+        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, "Prateleiro 30");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
 
         Movement movement1 = new Movement(MovementType.ENTRY, OriginType.INVOICE, "100", branchProduct, 200);
@@ -74,7 +74,7 @@ public class MovementRepositoryTest {
         Branch branch = new Branch("002", "Branch West");
         Branch savedBranch = branchRepository.save(branch);
 
-        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, 200, "Prateleiro 30");
+        BranchProduct branchProduct = new BranchProduct(savedBranch, savedProduct, "Prateleiro 30");
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
 
         List<Movement> foundListMovementsByBranchProducts = movementRepository.findByBranchProduct(savedBranchProduct);
