@@ -27,12 +27,17 @@ public class ProductService {
     }
 
 
-    public ProductResponseDto getProductByCode(String code) {
-        String normalizedCode = normalizeCode(code);
-        Product product = productRepository.findByCode(normalizedCode).orElseThrow(() -> new ProductNotFoundException(
-                "Nenhum produto encontrado com o código '%s'.".formatted(normalizedCode)));
+    public ProductResponseDto findProductByCode(String code) {
+        Product product = findProductEntityByCode(code);
         return productMapper.toDto(product);
     }
+
+    public Product findProductEntityByCode(String code) {
+        String normalizedCode = normalizeCode(code);
+        return productRepository.findByCode(normalizedCode).orElseThrow(() -> new ProductNotFoundException(
+                "Nenhum produto encontrado com o código '%s'.".formatted(normalizedCode)));
+    }
+
 
     public ProductResponseDto createProduct(String code, String name) {
         if (code == null || code.isBlank()) {
