@@ -122,6 +122,28 @@ Content-Type: application/json
 { "code": "SP01", "name": "Filial São Paulo" }
 ```
 
+### Produtos da filial — `/branches/{branchCode}/products`
+
+Vincula um produto já cadastrado a uma filial. O vínculo nasce com quantidade `0`: o estoque só muda por movimentação.
+
+| Método | Rota | Descrição | Sucesso | Erros |
+| --- | --- | --- | --- | --- |
+| `POST` | `/branches/{branchCode}/products` | Vincula um produto à filial (único por filial + produto) | `201` | `400`, `404`, `409` |
+
+A localização é opcional (máx. 15 caracteres), salva sem espaços nas pontas e em maiúsculas. Se vier em branco, é salva como `null`.
+
+```http
+POST /branches/sp01/products
+Content-Type: application/json
+
+{ "productCode": "cab-001", "location": " a01.p02 " }
+```
+
+```json
+// 201 Created
+{ "productCode": "CAB-001", "branchCode": "SP01", "location": "A01.P02", "quantity": 0 }
+```
+
 ## Domínio
 
 - **Product**: produto, com código único.
@@ -145,7 +167,7 @@ Principais regras de negócio:
 
 Os testes rodam com o perfil `test`, que usa um **banco H2 em memória**. Não é preciso ter MySQL instalado para executá-los, e eles não alteram o banco de desenvolvimento.
 
-- **Testes de API (MockMvc)**: cadastro, busca e listagem de produtos e filiais, cobrindo os status 201, 200, 400, 404 e 409, além de casos de borda como códigos que diferem só por maiúsculas ou espaços.
+- **Testes de API (MockMvc)**: cadastro, busca e listagem de produtos e filiais e vínculo de produto à filial, cobrindo os status 201, 200, 400, 404 e 409, além de casos de borda como códigos que diferem só por maiúsculas ou espaços.
 - **Testes de repositório**: consultas do Spring Data JPA para filiais, estoque por filial, fornecedores, notas fiscais, requisições e movimentações, incluindo os cenários de "não encontrado".
 
 ```bash
