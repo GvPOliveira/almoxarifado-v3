@@ -1,5 +1,7 @@
 # Almoxarifado V3
 
+[![CI](https://github.com/GvPOliveira/almoxarifado-v3/actions/workflows/ci.yml/badge.svg)](https://github.com/GvPOliveira/almoxarifado-v3/actions/workflows/ci.yml)
+
 API REST para controle de estoque de almoxarifado, desenvolvida com **Java 21** e **Spring Boot**.
 
 O projeto nasceu da minha rotina de trabalho em um almoxarifado: entradas por nota fiscal, saídas por requisição, estoque por filial e histórico de movimentações. Esta é a terceira versão do sistema:
@@ -49,7 +51,7 @@ MySQL
 
 Decisões principais:
 
-- **DTOs separados das entidades.** A API recebe `*CreateDTO` e devolve `*ResponseDTO`. As entidades JPA nunca são expostas diretamente, o que evita vazar campos internos (como o `id`) e desacopla o contrato da API do banco.
+- **DTOs separados das entidades.** A API recebe `*CreateDto` e devolve `*ResponseDto`, ambos declarados como `record`, e a conversão fica em classes `*Mapper`. As entidades JPA nunca são expostas diretamente, o que evita vazar campos internos (como o `id`) e desacopla o contrato da API do banco.
 - **Injeção de dependência por construtor** nos controllers e services.
 - **Validação em duas camadas.** Bean Validation (`@NotBlank`) no DTO barra a entrada inválida logo na chegada; o service revalida de forma defensiva, porque também pode ser chamado por outras partes do sistema.
 - **Códigos normalizados.** Códigos de produto e filial são salvos sem espaços nas pontas e em maiúsculas. Assim, `" abc01 "` e `"ABC01"` são tratados como o mesmo código, evitando duplicidade.
@@ -149,6 +151,8 @@ Os testes rodam com o perfil `test`, que usa um **banco H2 em memória**. Não �
 ```bash
 ./mvnw test
 ```
+
+Os mesmos testes rodam automaticamente no **GitHub Actions** a cada push e pull request na `main` ([workflow](.github/workflows/ci.yml)). O selo no topo deste README mostra o resultado da última execução.
 
 ## Como executar
 
