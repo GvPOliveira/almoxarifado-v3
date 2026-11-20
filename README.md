@@ -144,6 +144,27 @@ Content-Type: application/json
 { "productCode": "CAB-001", "branchCode": "SP01", "location": "A01.P02", "quantity": 0 }
 ```
 
+### Fornecedores — `/suppliers`
+
+| Método | Rota | Descrição | Sucesso | Erros |
+| --- | --- | --- | --- | --- |
+| `POST` | `/suppliers` | Cadastra um fornecedor (CNPJ único; o nome pode repetir) | `201` | `400`, `409` |
+| `GET` | `/suppliers/{cnpj}` | Busca pelo CNPJ | `200` | `404` |
+
+O CNPJ é salvo só com letras e números, em maiúsculas (já aceita o CNPJ alfanumérico), e precisa ter 14 caracteres depois de tirar a pontuação. Na busca, mande o CNPJ sem pontuação: a `/` de um CNPJ formatado quebraria a rota.
+
+```http
+POST /suppliers
+Content-Type: application/json
+
+{ "name": " Casas Bahia ", "cnpj": "03.038.044/00ed-01" }
+```
+
+```json
+// 201 Created
+{ "name": "Casas Bahia", "cnpj": "0303804400ED01" }
+```
+
 ## Domínio
 
 - **Product**: produto, com código único.

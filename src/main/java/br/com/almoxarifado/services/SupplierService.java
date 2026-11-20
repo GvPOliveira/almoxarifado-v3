@@ -5,6 +5,7 @@ import br.com.almoxarifado.dtos.supplier.SupplierResponseDto;
 import br.com.almoxarifado.entities.Supplier;
 import br.com.almoxarifado.exceptions.conflict.SupplierAlreadyExistsException;
 import br.com.almoxarifado.exceptions.invalid.SupplierInvalidException;
+import br.com.almoxarifado.exceptions.notfound.SupplierNotFoundException;
 import br.com.almoxarifado.mappers.SupplierMapper;
 import br.com.almoxarifado.repositories.SupplierRepository;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,19 @@ public class SupplierService {
         Supplier supplier = new Supplier(normalizedName, normalizedCnpj);
         Supplier savedSupplier = supplierRepository.save(supplier);
         return supplierMapper.toDto(savedSupplier);
+    }
+
+    public SupplierResponseDto findSupplierByCnpj(String cnpj) {
+        return supplierMapper.toDto(findSupplierEntityByCnpj(cnpj));
+    }
+
+    public Supplier findSupplierEntityByCnpj(String cnpj) {
+        if (cnpj == null || cnpj.isBlank()) {
+            throw new SupplierInvalidException("O CNPJ do fornecedor é obrigatório.");
+        }
+        String normalizedCnpj = normalizeCnpj(cnpj);
+        return supplierRepository.findByCnpj(normalizedCnpj).orElseThrow(() ->
+                new SupplierNotFoundException("Nenhum fornecedor encontrado com o CNPJ '%s'.".formatted(normalizedCnpj)));
     }
 
     private String normalizeCnpj(String cnpj) {

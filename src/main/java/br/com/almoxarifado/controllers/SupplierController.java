@@ -22,4 +22,9 @@ public class SupplierController {
     public SupplierResponseDto createSupplier(@Valid @RequestBody SupplierCreateDto supplierCreateDto) {
         return supplierService.createSupplier(supplierCreateDto.name(), supplierCreateDto.cnpj());
     }
+
+    @GetMapping("/{cnpj}")
+    public SupplierResponseDto findSupplierByCnpj(@PathVariable String cnpj) {
+        return supplierService.findSupplierByCnpj(cnpj);
+    }
 }

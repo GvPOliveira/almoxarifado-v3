@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -131,5 +132,28 @@ public class SupplierControllerTest {
                         """).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("O CNPJ do fornecedor deve ter 14 caracteres."));
+    }
+
+    @Test
+    void shouldReturnSupplierWhenCnpjExists() throws Exception {
+        mockMvc.perform(post("/suppliers").content("""
+                        {
+                        "name": " Casas Bahia ",
+                        "cnpj": "03.038.044/00ED-01"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/suppliers/0303804400ed01"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Casas Bahia"))
+                .andExpect(jsonPath("$.cnpj").value("0303804400ED01"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenSupplierDoesNotExist() throws Exception {
+        mockMvc.perform(get("/suppliers/0303804400ed01"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Nenhum fornecedor encontrado com o CNPJ '0303804400ED01'."));
     }
 }
