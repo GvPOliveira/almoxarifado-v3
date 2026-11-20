@@ -88,7 +88,7 @@ public class SupplierControllerTest {
                         }
                         """).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("O CNPJ do fornecedor é inválido."));
+                .andExpect(jsonPath("$.message").value("O CNPJ do fornecedor deve ter 14 caracteres."));
     }
 
     @Test
@@ -109,4 +109,27 @@ public class SupplierControllerTest {
                 .andExpect(jsonPath("$.message").value("Já existe um fornecedor com o CNPJ '0303804400ED01'."));
     }
 
+    @Test
+    void shouldReturnBadRequestWhenCnpjHasFewerThan14Characters() throws Exception {
+        mockMvc.perform(post("/suppliers").content("""
+                        {
+                        "name": "Casas Bahia",
+                        "cnpj": "1320938401112"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("O CNPJ do fornecedor deve ter 14 caracteres."));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenCnpjHasMoreThan14Characters() throws Exception {
+        mockMvc.perform(post("/suppliers").content("""
+                        {
+                        "name": "Casas Bahia",
+                        "cnpj": "132093840111211"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("O CNPJ do fornecedor deve ter 14 caracteres."));
+    }
 }

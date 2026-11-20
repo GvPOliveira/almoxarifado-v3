@@ -33,8 +33,8 @@ public class SupplierService {
 
         String normalizedCnpj = normalizeCnpj(cnpj);
 
-        if (normalizedCnpj.isEmpty()) {
-            throw new SupplierInvalidException("O CNPJ do fornecedor é inválido.");
+        if (normalizedCnpj.length() != 14) {
+            throw new SupplierInvalidException("O CNPJ do fornecedor deve ter 14 caracteres.");
         }
 
         Optional<Supplier> foundSupplier = supplierRepository.findByCnpj(normalizedCnpj);
