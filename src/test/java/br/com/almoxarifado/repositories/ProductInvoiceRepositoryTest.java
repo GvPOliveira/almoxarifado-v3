@@ -44,7 +44,7 @@ public class ProductInvoiceRepositoryTest {
         Branch savedBranch = branchRepository.save(branch);
         Supplier supplier = new Supplier("Fornecedor 1", "05.032.005/0001-56");
         Supplier savedSupplier = supplierRepository.save(supplier);
-        Invoice invoice = new Invoice("566", savedSupplier, savedBranch, new BigDecimal("10.200"));
+        Invoice invoice = new Invoice("566", savedSupplier, savedBranch);
         Invoice savedInvoice = invoiceRepository.save(invoice);
         ProductInvoice productInvoice1 = new ProductInvoice(savedInvoice, savedProduct1, 100, Destination.STOCK, new BigDecimal("3.400"));
         ProductInvoice productInvoice2 = new ProductInvoice(savedInvoice, savedProduct2, 200, Destination.STOCK, new BigDecimal("3.400"));
@@ -72,7 +72,7 @@ public class ProductInvoiceRepositoryTest {
         Branch savedBranch = branchRepository.save(branch);
         Supplier supplier = new Supplier("Fornecedor 1", "05.005.025/0002-33");
         Supplier savedSupplier = supplierRepository.save(supplier);
-        Invoice invoice = new Invoice("5000", savedSupplier, savedBranch, new BigDecimal("10.200"));
+        Invoice invoice = new Invoice("5000", savedSupplier, savedBranch);
         Invoice savedInvoice = invoiceRepository.save(invoice);
         List<ProductInvoice> productInvoiceList = productInvoiceRepository.findByInvoiceId(savedInvoice.getId());
 

@@ -21,8 +21,11 @@ O objetivo da v3 é reconstruir o mesmo domínio com o ecossistema Spring e comp
 | --- | --- |
 | Produtos (cadastro, busca, listagem) | ✅ Pronto, com API e testes |
 | Filiais (cadastro, busca, listagem) | ✅ Pronto, com API e testes |
+| Produtos da filial (vínculo produto ↔ filial) | ✅ Pronto, com API e testes |
+| Fornecedores (cadastro, busca por CNPJ) | ✅ Pronto, com API e testes |
+| Notas fiscais (cadastro com itens e total calculado) | ✅ Pronto, com API e testes |
 | Entidades e repositórios do domínio completo (estoque por filial, notas fiscais, fornecedores, requisições, movimentações) | ✅ Mapeados com JPA e testados |
-| Entrada de estoque por nota fiscal | 🔜 Próxima etapa |
+| Processamento da nota fiscal (entrada no estoque) | 🔜 Próxima etapa |
 | Atendimento e estorno de requisições | 🔜 Planejado |
 | Histórico de movimentações via API | 🔜 Planejado |
 
@@ -157,12 +160,57 @@ O CNPJ é salvo só com letras e números, em maiúsculas (já aceita o CNPJ alf
 POST /suppliers
 Content-Type: application/json
 
-{ "name": " Casas Bahia ", "cnpj": "03.038.044/00ed-01" }
+{ "name": " Distribuidora Exemplo ", "cnpj": "03.038.044/00ed-01" }
 ```
 
 ```json
 // 201 Created
-{ "name": "Casas Bahia", "cnpj": "0303804400ED01" }
+{ "name": "Distribuidora Exemplo", "cnpj": "0303804400ED01" }
+```
+
+### Notas fiscais — `/suppliers/{cnpj}/invoices`
+
+A nota fica dentro do fornecedor porque é identificada por número + fornecedor. Ela é salva como **não processada** (`processed: false`): o estoque só muda quando a nota for processada (próxima etapa).
+
+| Método | Rota | Descrição | Sucesso | Erros |
+| --- | --- | --- | --- | --- |
+| `POST` | `/suppliers/{cnpj}/invoices` | Cadastra uma nota com seus itens | `201` | `400`, `404`, `409` |
+
+Regras:
+
+- O fornecedor, a filial e cada produto precisam existir (`404`).
+- Item com destino `STOCK` exige que o produto esteja vinculado à filial da nota (`404`). Item `DIRECT` (consumo direto) não exige.
+- O número da nota é único por fornecedor (`409`) e é salvo sem espaços nas pontas.
+- A nota precisa de pelo menos um item, e cada item é validado (quantidade e preço maiores que zero, destino obrigatório). O erro de um item aparece com o caminho do campo, por exemplo `items[0].quantity`.
+- O total (`totalValue`) não é enviado: é calculado pela própria entidade como a soma de quantidade × preço unitário dos itens.
+
+```http
+POST /suppliers/0303804400ed01/invoices
+Content-Type: application/json
+
+{
+  "number": "000123",
+  "branchCode": "sp01",
+  "items": [
+    { "productCode": "cab-001", "quantity": 3, "unitPrice": 5.20, "destination": "STOCK" },
+    { "productCode": "luv-010", "quantity": 2, "unitPrice": 5.00, "destination": "DIRECT" }
+  ]
+}
+```
+
+```json
+// 201 Created
+{
+  "number": "000123",
+  "supplierCnpj": "0303804400ED01",
+  "branchCode": "SP01",
+  "totalValue": 25.60,
+  "processed": false,
+  "items": [
+    { "productCode": "CAB-001", "quantity": 3, "unitPrice": 5.20, "destination": "STOCK" },
+    { "productCode": "LUV-010", "quantity": 2, "unitPrice": 5.00, "destination": "DIRECT" }
+  ]
+}
 ```
 
 ## Domínio
@@ -188,7 +236,8 @@ Principais regras de negócio:
 
 Os testes rodam com o perfil `test`, que usa um **banco H2 em memória**. Não é preciso ter MySQL instalado para executá-los, e eles não alteram o banco de desenvolvimento.
 
-- **Testes de API (MockMvc)**: cadastro, busca e listagem de produtos e filiais e vínculo de produto à filial, cobrindo os status 201, 200, 400, 404 e 409, além de casos de borda como códigos que diferem só por maiúsculas ou espaços.
+- **Testes de API (MockMvc)**: produtos, filiais, vínculo de produto à filial, fornecedores e notas fiscais, cobrindo os status 201, 200, 400, 404 e 409, além de casos de borda como códigos que diferem só por maiúsculas ou espaços, CNPJ formatado e validação de itens dentro da lista.
+- **Testes unitários de entidade (JUnit puro, sem Spring)**: o cálculo do total da nota fiscal ao adicionar itens.
 - **Testes de repositório**: consultas do Spring Data JPA para filiais, estoque por filial, fornecedores, notas fiscais, requisições e movimentações, incluindo os cenários de "não encontrado".
 
 ```bash

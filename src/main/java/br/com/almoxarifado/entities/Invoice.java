@@ -1,8 +1,10 @@
 package br.com.almoxarifado.entities;
 
+import br.com.almoxarifado.enums.Destination;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -26,19 +28,34 @@ public class Invoice {
     private Branch branch;
 
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.PERSIST)
-    private List<ProductInvoice> productInvoices;
-    private BigDecimal totalValue;
+    private List<ProductInvoice> productInvoices = new ArrayList<>();
+    private BigDecimal totalValue = BigDecimal.ZERO;
     private boolean processed;
     private boolean reversed;
 
     public Invoice() {
     }
 
-    public Invoice(String number, Supplier supplier, Branch branch, BigDecimal totalValue) {
+    public Invoice(String number, Supplier supplier, Branch branch) {
         this.number = number;
         this.supplier = supplier;
         this.branch = branch;
-        this.totalValue = totalValue;
+    }
+
+    public void addItem(Product product, int quantity, Destination destination, BigDecimal unitPrice) {
+        ProductInvoice productInvoice = new ProductInvoice(this, product, quantity, destination, unitPrice);
+        productInvoices.add(productInvoice);
+        BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(quantity));
+        this.totalValue = this.totalValue.add(totalPrice);
+
+    }
+
+    public List<ProductInvoice> getProductInvoices() {
+        return List.copyOf(productInvoices);
+    }
+
+    public BigDecimal getTotalValue() {
+        return totalValue;
     }
 
     public Long getId() {

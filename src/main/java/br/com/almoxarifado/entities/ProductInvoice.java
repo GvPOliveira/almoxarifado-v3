@@ -54,4 +54,8 @@ public class ProductInvoice {
     public Destination getDestination() {
         return destination;
     }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
 }

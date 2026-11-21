@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +33,7 @@ public class InvoiceRepositoryTest {
         Supplier supplier = new Supplier("Fornecedor 1", "05.368.025/0001-56");
         Supplier savedSupplier = supplierRepository.save(supplier);
 
-        Invoice invoice = new Invoice("344", savedSupplier, branchSaved, new BigDecimal("10.000"));
+        Invoice invoice = new Invoice("344", savedSupplier, branchSaved);
         invoiceRepository.save(invoice);
         Optional<Invoice> invoiceFound = invoiceRepository.findByNumberAndSupplierCnpj("344", supplier.getCnpj());
 
