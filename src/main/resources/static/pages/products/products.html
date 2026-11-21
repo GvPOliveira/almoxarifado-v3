@@ -3,117 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="stylesheet" href="../../style.css">
-    <link rel="stylesheet" href="products.css">
-
+    <meta name="description" content="Cadastro e consulta de produtos do almoxarifado">
     <title>Produtos | Almoxarifado V3</title>
-
+    <link rel="stylesheet" href="/style.css">
     <script src="products.js" defer></script>
 </head>
 
 <body>
-
 <header class="header">
     <div class="container header-content">
         <a href="/" class="logo">
-            <span class="logo-icon">A</span>
+            <span class="logo-icon" aria-hidden="true">A</span>
             <span>Almoxarifado<span class="logo-version">V3</span></span>
         </a>
-
         <nav class="navigation" aria-label="Navegação principal">
-            <a href="#register" class="nav-link active">Produtos</a>
-            <a href="#search" class="nav-link">Buscar</a>
-            <a href="#list" class="nav-link">Listagem</a>
+            <a href="/" class="nav-link">Início</a>
+            <a href="/pages/products/products.html" class="nav-link" aria-current="page">Produtos</a>
+            <a href="/pages/branches/branches.html" class="nav-link">Filiais</a>
+            <a href="/pages/branch-products/branch-products.html" class="nav-link">Produtos da filial</a>
+            <a href="/pages/suppliers/suppliers.html" class="nav-link">Fornecedores</a>
+            <a href="/pages/invoices/invoices.html" class="nav-link">Notas fiscais</a>
         </nav>
     </div>
 </header>
 
+<main class="container main-content">
 
-<main class="container">
-
-    <section class="page-intro">
+    <section class="page-heading">
+        <p class="eyebrow">Cadastro</p>
         <h1>Produtos</h1>
-        <p>Cadastre, consulte e acompanhe os produtos registrados no sistema.</p>
+        <p class="page-description">Cadastre, consulte e acompanhe os produtos registrados no sistema.</p>
     </section>
 
-    <div class="products-layout">
-
-        <section id="register" class="panel">
-            <div class="section-heading">
-                <h2>Cadastrar produto</h2>
-                <p>Preencha os dados para registrar um novo produto.</p>
+    <div class="layout-two">
+        <section id="register" class="card" aria-labelledby="register-title">
+            <div class="card-heading">
+                <div>
+                    <h2 id="register-title">Cadastrar produto</h2>
+                    <p>O código é salvo em maiúsculas e precisa ser único.</p>
+                </div>
             </div>
 
-            <div class="group">
-                <label for="codeProduct">Código</label>
-                <input
-                        type="text"
-                        id="codeProduct"
-                        placeholder="E001.200.227"
-                >
-                <span class="error" id="codeProductError"></span>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="codeProduct">Código</label>
+                    <input type="text" id="codeProduct" placeholder="Ex.: E001.200.227" autocomplete="off">
+                    <span class="error" id="codeProductError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="nameProduct">Nome</label>
+                    <input type="text" id="nameProduct" placeholder="Ex.: Parafuso 3/4 x 5" autocomplete="off">
+                    <span class="error" id="nameProductError"></span>
+                </div>
             </div>
 
-            <div class="group">
-                <label for="nameProduct">Nome</label>
-                <input
-                        type="text"
-                        id="nameProduct"
-                        placeholder="Parafuso 3/4 x 5"
-                >
-                <span class="error" id="nameProductError"></span>
+            <div class="form-actions">
+                <button type="button" id="registerButton" class="button button-primary">Cadastrar produto</button>
             </div>
-
-            <button type="button" id="registerButton" class="button button-primary">
-                Cadastrar produto
-            </button>
 
             <p id="result" role="status" aria-live="polite"></p>
         </section>
 
-        <section id="search" class="panel">
-            <div class="section-heading">
-                <h2>Buscar produto</h2>
-                <p>Consulte um produto utilizando seu código.</p>
+        <section id="search" class="card" aria-labelledby="search-title">
+            <div class="card-heading">
+                <div>
+                    <h2 id="search-title">Buscar produto</h2>
+                    <p>Consulte um produto pelo código.</p>
+                </div>
             </div>
 
-            <div class="group">
-                <label for="productCode">Código do produto</label>
-                <input
-                        type="text"
-                        id="productCode"
-                        placeholder="Digite o código do produto"
-                >
+            <div class="inline-search">
+                <div class="form-group">
+                    <label for="productCode">Código do produto</label>
+                    <input type="text" id="productCode" placeholder="Ex.: E001.200.227" autocomplete="off">
+                </div>
+                <button type="button" id="getProduct" class="button button-secondary">Buscar</button>
             </div>
 
-            <button type="button" id="getProduct" class="button button-secondary">
-                Buscar produto
-            </button>
-
-            <div class="products-card">
+            <div class="result-box">
                 <div id="showProduct"></div>
             </div>
         </section>
+    </div>
 
-        <section id="list" class="panel products-list-panel">
-            <div class="section-heading">
-                <h2>Produtos cadastrados</h2>
+    <section id="list" class="card" aria-labelledby="list-title">
+        <div class="card-heading">
+            <div>
+                <h2 id="list-title">Produtos cadastrados</h2>
                 <p id="searchProductsInApi">Consulte os produtos registrados na API.</p>
             </div>
+            <button type="button" id="getProducts" class="button button-secondary">Atualizar listagem</button>
+        </div>
 
-            <button type="button" id="getProducts" class="button button-secondary">
-                Atualizar listagem
-            </button>
-
-            <div class="products-card">
-                <div id="productList"></div>
-            </div>
-        </section>
-
-    </div>
+        <div id="productList" class="list-cards"></div>
+    </section>
 
 </main>
 
+<footer class="footer">
+    <div class="container">
+        <p>Almoxarifado V3 · Sistema de controle de estoque</p>
+    </div>
+</footer>
 </body>
 </html>

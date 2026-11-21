@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadastro e consulta de fornecedores do almoxarifado">
+    <title>Fornecedores | Almoxarifado V3</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="suppliers-ui.js" defer></script>
+</head>
+
+<body>
+<header class="header">
+    <div class="container header-content">
+        <a href="/" class="logo">
+            <span class="logo-icon" aria-hidden="true">A</span>
+            <span>Almoxarifado<span class="logo-version">V3</span></span>
+        </a>
+        <nav class="navigation" aria-label="Navegação principal">
+            <a href="/" class="nav-link">Início</a>
+            <a href="/pages/products/products.html" class="nav-link">Produtos</a>
+            <a href="/pages/branches/branches.html" class="nav-link">Filiais</a>
+            <a href="/pages/branch-products/branch-products.html" class="nav-link">Produtos da filial</a>
+            <a href="/pages/suppliers/suppliers.html" class="nav-link" aria-current="page">Fornecedores</a>
+            <a href="/pages/invoices/invoices.html" class="nav-link">Notas fiscais</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <section class="page-heading">
+        <p class="eyebrow">Cadastro</p>
+        <h1>Fornecedores</h1>
+        <p class="page-description">
+            Cadastre fornecedores pelo CNPJ. Pode digitar com ou sem pontuação: o sistema guarda só
+            letras e números (já aceita o CNPJ alfanumérico).
+        </p>
+    </section>
+
+    <div class="layout-two">
+        <section class="card" aria-labelledby="create-title">
+            <div class="card-heading">
+                <div>
+                    <h2 id="create-title">Cadastrar fornecedor</h2>
+                    <p>O CNPJ é único; o nome pode se repetir entre matriz e filiais.</p>
+                </div>
+            </div>
+
+            <div id="create-message" class="message" role="status" aria-live="polite" hidden></div>
+
+            <form id="create-form" novalidate>
+                <div class="form-grid">
+                    <div class="form-group form-group-full">
+                        <label for="name">Razão social</label>
+                        <input type="text" id="name" name="name" placeholder="Ex.: Distribuidora Exemplo Ltda"
+                               autocomplete="off">
+                        <span class="field-error" data-error-for="name"></span>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label for="cnpj">CNPJ</label>
+                        <input type="text" id="cnpj" name="cnpj" placeholder="Ex.: 12.345.678/0001-90"
+                               autocomplete="off" aria-describedby="cnpj-hint">
+                        <span id="cnpj-hint" class="hint">0 de 14 caracteres</span>
+                        <span class="field-error" data-error-for="cnpj"></span>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="reset" class="button button-secondary">Limpar</button>
+                    <button type="submit" class="button button-primary">Cadastrar fornecedor</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card" aria-labelledby="search-title">
+            <div class="card-heading">
+                <div>
+                    <h2 id="search-title">Buscar fornecedor</h2>
+                    <p>Consulte um fornecedor pelo CNPJ.</p>
+                </div>
+            </div>
+
+            <form id="search-form" class="inline-search" novalidate>
+                <div class="form-group">
+                    <label for="search-cnpj">CNPJ</label>
+                    <input type="text" id="search-cnpj" name="cnpj" placeholder="Com ou sem pontuação"
+                           autocomplete="off">
+                </div>
+                <button type="submit" class="button button-secondary">Buscar</button>
+            </form>
+
+            <div id="search-message" class="message" role="status" aria-live="polite" hidden></div>
+            <div id="search-result" class="result" hidden></div>
+        </section>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>Almoxarifado V3 · Sistema de controle de estoque</p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Vínculo de produtos às filiais do almoxarifado">
+    <title>Produtos da filial | Almoxarifado V3</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+<header class="header">
+    <div class="container header-content">
+        <a href="/" class="logo">
+            <span class="logo-icon" aria-hidden="true">A</span>
+            <span>Almoxarifado<span class="logo-version">V3</span></span>
+        </a>
+        <nav class="navigation" aria-label="Navegação principal">
+            <a href="/" class="nav-link">Início</a>
+            <a href="/pages/products/products.html" class="nav-link">Produtos</a>
+            <a href="/pages/branches/branches.html" class="nav-link">Filiais</a>
+            <a href="/pages/branch-products/branch-products.html" class="nav-link" aria-current="page">Produtos da filial</a>
+            <a href="/pages/suppliers/suppliers.html" class="nav-link">Fornecedores</a>
+            <a href="/pages/invoices/invoices.html" class="nav-link">Notas fiscais</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container main-content">
+
+    <section class="page-heading">
+        <p class="eyebrow">Estoque</p>
+        <h1>Produtos da filial</h1>
+        <p class="page-description">
+            Vincule um produto já cadastrado a uma filial. O vínculo nasce com quantidade 0:
+            o estoque só muda por movimentação, como a entrada de uma nota fiscal.
+        </p>
+    </section>
+
+    <section class="card" aria-labelledby="create-title">
+        <div class="card-heading">
+            <div>
+                <h2 id="create-title">Vincular produto</h2>
+                <p>Cada produto pode ser vinculado uma única vez a cada filial.</p>
+            </div>
+        </div>
+
+        <div id="create-message" class="message" role="status" aria-live="polite" hidden></div>
+
+        <form id="create-form" novalidate>
+            <div class="form-grid form-grid-three">
+                <div class="form-group">
+                    <label for="branchCode">Filial</label>
+                    <input type="text" id="branchCode" name="branchCode" list="branch-options"
+                           placeholder="Ex.: SP01" autocomplete="off">
+                    <span class="field-error" data-error-for="branchCode"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="productCode">Produto</label>
+                    <input type="text" id="productCode" name="productCode" list="product-options"
+                           placeholder="Ex.: CAB-001" autocomplete="off">
+                    <span class="field-error" data-error-for="productCode"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Localização <span class="hint">(opcional)</span></label>
+                    <input type="text" id="location" name="location" maxlength="15"
+                           placeholder="Ex.: A01.P02" autocomplete="off">
+                    <span class="field-error" data-error-for="location"></span>
+                </div>
+            </div>
+
+            <datalist id="branch-options"></datalist>
+            <datalist id="product-options"></datalist>
+
+            <div class="form-actions">
+                <button type="reset" class="button button-secondary">Limpar</button>
+                <button type="submit" class="button button-primary">Vincular produto</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="card" aria-labelledby="session-title">
+        <div class="card-heading">
+            <div>
+                <h2 id="session-title">Vínculos criados nesta sessão</h2>
+                <p>A API ainda não tem listagem de vínculos; aqui aparecem os que você criou agora.</p>
+            </div>
+        </div>
+
+        <div id="session-list"></div>
+    </section>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>Almoxarifado V3 · Sistema de controle de estoque</p>
+    </div>
+</footer>
+</body>
+</html>
