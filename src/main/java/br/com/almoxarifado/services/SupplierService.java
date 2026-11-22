@@ -10,6 +10,7 @@ import br.com.almoxarifado.mappers.SupplierMapper;
 import br.com.almoxarifado.repositories.SupplierRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -50,9 +51,14 @@ public class SupplierService {
         return supplierMapper.toDto(savedSupplier);
     }
 
+    public List<SupplierResponseDto> findAllSuppliers() {
+        return supplierRepository.findAllByOrderByNameAsc().stream().map(supplierMapper::toDto).toList();
+    }
+
     public SupplierResponseDto findSupplierByCnpj(String cnpj) {
         return supplierMapper.toDto(findSupplierEntityByCnpj(cnpj));
     }
+
 
     public Supplier findSupplierEntityByCnpj(String cnpj) {
         if (cnpj == null || cnpj.isBlank()) {

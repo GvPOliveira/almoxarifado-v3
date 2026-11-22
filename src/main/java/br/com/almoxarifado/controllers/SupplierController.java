@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/suppliers")
 public class SupplierController {
@@ -21,6 +23,11 @@ public class SupplierController {
     @ResponseStatus(HttpStatus.CREATED)
     public SupplierResponseDto createSupplier(@Valid @RequestBody SupplierCreateDto supplierCreateDto) {
         return supplierService.createSupplier(supplierCreateDto.name(), supplierCreateDto.cnpj());
+    }
+
+    @GetMapping
+    public List<SupplierResponseDto> findAllSuppliers() {
+        return supplierService.findAllSuppliers();
     }
 
     @GetMapping("/{cnpj}")

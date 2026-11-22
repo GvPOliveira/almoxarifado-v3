@@ -156,4 +156,35 @@ public class SupplierControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Nenhum fornecedor encontrado com o CNPJ '0303804400ED01'."));
     }
+
+    @Test
+    void shouldReturnAllSuppliersWhenSuppliersExist() throws Exception {
+        mockMvc.perform(post("/suppliers").content("""
+                        {
+                        "name": " Casas Bahia ",
+                        "cnpj": "03.038.044/00ed-01"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers").content("""
+                        {
+                        "name": " Casas Bahia ",
+                        "cnpj": "03.038.044/00ed-02"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/suppliers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[1].cnpj").value("0303804400ED02"));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenNoSuppliersExist() throws Exception {
+        mockMvc.perform(get("/suppliers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
 }
