@@ -302,4 +302,28 @@ public class InvoiceControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors['items[0].quantity']").value("A quantidade deve ser maior que zero."));
     }
+
+    @Test
+    void shouldReturnBadRequestWhenItemQuantityIsNull() throws Exception {
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399444",
+                                        "branchCode": "001",
+                                        "items":
+                                        [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": null,
+                                        "unitPrice": 20,
+                                        "destination": "STOCK"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors['items[0].quantity']").value("A quantidade é obrigatória."));
+    }
 }

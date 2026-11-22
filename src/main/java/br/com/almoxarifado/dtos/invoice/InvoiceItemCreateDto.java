@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 public record InvoiceItemCreateDto(
         @NotBlank(message = "O código do produto é obrigatório.") String productCode,
-        @Positive(message = "A quantidade deve ser maior que zero.") int quantity,
+        @Positive(message = "A quantidade deve ser maior que zero.") @NotNull(message = "A quantidade é obrigatória.") Integer quantity,
         @NotNull(message = "O preço unitário é obrigatório.") @Positive(message = "O preço unitário deve ser maior que zero.") BigDecimal unitPrice,
         @NotNull(message = "O destino é obrigatório.") Destination destination) {
 }
