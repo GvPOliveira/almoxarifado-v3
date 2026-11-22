@@ -42,12 +42,14 @@
             </div>
         </div>
 
+        <div id="create-message" class="message" role="status" aria-live="polite" hidden></div>
+
         <form id="branch-form">
             <div class="form-grid">
                 <div class="form-group">
                     <label for="code">Código da filial</label>
                     <input type="text" id="code" name="code" placeholder="Ex.: SP01" maxlength="30" autocomplete="off">
-                    <span id="errorCode" class="error"></span>
+                    <span id="errorCode" class="error" data-error-for="code"></span>
                     <small class="hint">Informe um código único para a filial.</small>
                 </div>
 
@@ -55,7 +57,7 @@
                     <label for="name">Nome da filial</label>
                     <input type="text" id="name" name="name" placeholder="Ex.: Filial São Paulo" maxlength="100"
                            autocomplete="off">
-                    <span id="errorName" class="error"></span>
+                    <span id="errorName" class="error" data-error-for="name"></span>
                     <small class="hint">Utilize um nome que identifique a unidade.</small>
                 </div>
             </div>

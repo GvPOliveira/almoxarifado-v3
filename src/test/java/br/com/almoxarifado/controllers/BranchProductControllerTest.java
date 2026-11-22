@@ -210,5 +210,4 @@ public class BranchProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(0));
     }
-
 }
