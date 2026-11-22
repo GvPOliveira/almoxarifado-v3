@@ -279,6 +279,13 @@ h1 {
     box-shadow: 0 0 0 3px rgb(37 99 235 / 12%);
 }
 
+.form-group select:disabled,
+.form-group input:disabled {
+    color: var(--text-secondary);
+    background: var(--surface-muted);
+    cursor: not-allowed;
+}
+
 .form-group .is-invalid {
     border-color: var(--danger);
 }

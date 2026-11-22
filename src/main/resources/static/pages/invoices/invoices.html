@@ -52,10 +52,10 @@
         <form id="invoice-form" novalidate>
             <div class="form-grid form-grid-three">
                 <div class="form-group">
-                    <label for="supplierCnpj">CNPJ do fornecedor</label>
-                    <input type="text" id="supplierCnpj" name="supplierCnpj" placeholder="Ex.: 12.345.678/0001-90"
-                           autocomplete="off" aria-describedby="supplier-hint">
-                    <span id="supplier-hint" class="hint">Com ou sem pontuação.</span>
+                    <label for="supplierCnpj">Fornecedor</label>
+                    <select id="supplierCnpj" name="supplierCnpj">
+                        <option value="">Selecione o fornecedor</option>
+                    </select>
                     <span class="field-error" data-error-for="supplierCnpj"></span>
                 </div>
 
@@ -67,8 +67,9 @@
 
                 <div class="form-group">
                     <label for="branchCode">Filial de entrada</label>
-                    <input type="text" id="branchCode" name="branchCode" list="branch-options"
-                           placeholder="Ex.: SP01" autocomplete="off">
+                    <select id="branchCode" name="branchCode">
+                        <option value="">Selecione a filial</option>
+                    </select>
                     <span class="field-error" data-error-for="branchCode"></span>
                 </div>
             </div>
@@ -76,15 +77,15 @@
             <fieldset class="items">
                 <legend>Itens da nota</legend>
                 <p class="hint items-help">
-                    Itens de <strong>estoque</strong> precisam estar vinculados à filial
-                    (em Produtos da filial). Itens de <strong>consumo direto</strong> não entram no estoque.
+                    Escolha primeiro o destino. Em <strong>estoque</strong>, a lista mostra só os produtos
+                    vinculados à filial; em <strong>consumo direto</strong>, mostra todos os produtos.
                 </p>
 
                 <div class="items-header" aria-hidden="true">
+                    <span>Destino</span>
                     <span>Produto</span>
                     <span>Quantidade</span>
                     <span>Preço unitário</span>
-                    <span>Destino</span>
                     <span class="number">Total do item</span>
                     <span></span>
                 </div>
@@ -97,9 +98,6 @@
                     <p class="invoice-total">Total da nota: <strong id="invoice-total">R$ 0,00</strong></p>
                 </div>
             </fieldset>
-
-            <datalist id="branch-options"></datalist>
-            <datalist id="product-options"></datalist>
 
             <div class="form-actions">
                 <button type="reset" class="button button-secondary">Limpar</button>
@@ -130,8 +128,18 @@
 <template id="item-row-template">
     <div class="item-row">
         <div class="form-group">
+            <label class="item-label" data-label="destination">Destino</label>
+            <select data-field="destination">
+                <option value="STOCK">Estoque</option>
+                <option value="DIRECT">Consumo direto</option>
+            </select>
+            <span class="field-error" data-error-field="destination"></span>
+        </div>
+        <div class="form-group">
             <label class="item-label" data-label="productCode">Produto</label>
-            <input type="text" data-field="productCode" list="product-options" placeholder="Código" autocomplete="off">
+            <select data-field="productCode">
+                <option value="">Selecione o produto</option>
+            </select>
             <span class="field-error" data-error-field="productCode"></span>
         </div>
         <div class="form-group">
@@ -143,14 +151,6 @@
             <label class="item-label" data-label="unitPrice">Preço unitário (R$)</label>
             <input type="number" data-field="unitPrice" min="0.01" step="0.01" inputmode="decimal" placeholder="0,00">
             <span class="field-error" data-error-field="unitPrice"></span>
-        </div>
-        <div class="form-group">
-            <label class="item-label" data-label="destination">Destino</label>
-            <select data-field="destination">
-                <option value="STOCK">Estoque</option>
-                <option value="DIRECT">Consumo direto</option>
-            </select>
-            <span class="field-error" data-error-field="destination"></span>
         </div>
         <p class="item-total number" data-item-total>R$ 0,00</p>
         <button type="button" class="button button-ghost remove-item" aria-label="Remover item">Remover</button>

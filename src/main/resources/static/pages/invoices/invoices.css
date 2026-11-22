@@ -21,7 +21,7 @@
 .items-header,
 .item-row {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1.3fr) minmax(90px, 1fr) auto;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1.2fr) minmax(90px, 1fr) auto;
     gap: 12px;
     align-items: start;
 }
@@ -104,7 +104,7 @@
         padding: 14px 0;
     }
 
-    .item-row .form-group:first-child {
+    .item-row .form-group:nth-child(2) {
         grid-column: 1 / -1;
     }
 

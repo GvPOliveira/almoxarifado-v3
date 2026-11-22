@@ -1,22 +1,28 @@
 // Interatividade da tela de notas fiscais (sem chamadas à API).
 // - Adiciona e remove linhas de item a partir do <template id="item-row-template">.
 // - Mantém os nomes dos campos no formato que o back usa nos erros: items[0].quantity, items[1].unitPrice...
-//   Assim, no seu invoices.js, o erro "items[0].quantity" do 400 acha o campo com
-//   document.querySelector('[name="items[0].quantity"]') e o span com '[data-error-for="items[0].quantity"]'.
+//   Assim, no seu invoices.js, o erro "items[0].quantity" do 400 acha o span com
+//   document.querySelector('[data-error-for="items[0].quantity"]').
 // - Mostra a prévia do total de cada item e da nota (o total oficial é calculado pelo back).
-// - Mostra quantos caracteres válidos o CNPJ tem.
+// - Avisa o seu invoices.js sempre que uma linha nova é criada, com o evento "item-row-added".
+//
 // Para ler os itens no seu JS: percorra document.querySelectorAll(".item-row") e, em cada linha,
-// use row.querySelector('[data-field="quantity"]').value (o mesmo para productCode, unitPrice e destination).
+// use row.querySelector('[data-field="quantity"]').value (o mesmo para destination, productCode e unitPrice).
+//
+// Para encher o select de produto de cada linha nova, escute o evento no #item-rows:
+//   document.getElementById("item-rows").addEventListener("item-row-added", event => {
+//       const row = event.detail.row;   // a linha que acabou de ser criada
+//   });
+// Escute antes da primeira linha ser criada: este arquivo cria a primeira linha depois que a página
+// termina de carregar (DOMContentLoaded), então o seu listener registrado no topo do invoices.js já pega ela.
+
 // Tudo fica dentro desta função para não conflitar com as variáveis do seu JS da página.
 (() => {
-
     const invoiceForm = document.getElementById("invoice-form");
     const itemRows = document.getElementById("item-rows");
     const itemTemplate = document.getElementById("item-row-template");
     const invoiceTotalText = document.getElementById("invoice-total");
     const addItemButton = document.getElementById("add-item");
-    const supplierCnpjInput = document.getElementById("supplierCnpj");
-    const supplierHintText = document.getElementById("supplier-hint");
 
     const moneyFormatter = new Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"});
     let nextRowId = 0;
@@ -37,8 +43,11 @@
         renumberRows();
         updateTotals();
 
+        // Avisa quem estiver ouvindo (o seu invoices.js) que esta linha precisa da lista de produtos.
+        itemRows.dispatchEvent(new CustomEvent("item-row-added", {detail: {row}}));
+
         if (focusNewRow) {
-            row.querySelector('[data-field="productCode"]').focus();
+            row.querySelector('[data-field="destination"]').focus();
         }
     }
 
@@ -62,8 +71,9 @@
             for (const span of row.querySelectorAll("[data-error-field]")) {
                 span.dataset.errorFor = "items[" + index + "]." + span.dataset.errorField;
             }
-            row.querySelector(".remove-item").setAttribute("aria-label", "Remover item " + (index + 1));
-            row.querySelector(".remove-item").disabled = rows.length === 1;
+            const removeButton = row.querySelector(".remove-item");
+            removeButton.setAttribute("aria-label", "Remover item " + (index + 1));
+            removeButton.disabled = rows.length === 1;
         });
     }
 
@@ -80,13 +90,6 @@
         invoiceTotalText.textContent = moneyFormatter.format(invoiceTotal);
     }
 
-    function updateSupplierHint() {
-        const length = supplierCnpjInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").length;
-        supplierHintText.textContent = length === 0
-            ? "Com ou sem pontuação."
-            : length + " de 14 caracteres";
-    }
-
     addItemButton.addEventListener("click", () => addItemRow(true));
 
     itemRows.addEventListener("input", updateTotals);
@@ -98,20 +101,19 @@
         }
     });
 
-    supplierCnpjInput.addEventListener("input", updateSupplierHint);
-
     // O "Limpar" do formulário volta para uma linha vazia e total zero.
     invoiceForm.addEventListener("reset", () => {
         // O reset do navegador roda depois deste evento; o setTimeout espera ele terminar.
         setTimeout(() => {
             itemRows.replaceChildren();
             addItemRow(false);
-            updateSupplierHint();
             for (const span of invoiceForm.querySelectorAll("[data-error-for]")) {
                 span.textContent = "";
             }
         });
     });
 
-    addItemRow(false);
+    // A primeira linha só é criada quando a página termina de carregar, para dar tempo do seu
+    // invoices.js registrar o listener de "item-row-added" e encher o select dela também.
+    document.addEventListener("DOMContentLoaded", () => addItemRow(false));
 })();
