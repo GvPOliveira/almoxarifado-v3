@@ -132,6 +132,7 @@ Vincula um produto já cadastrado a uma filial. O vínculo nasce com quantidade 
 | Método | Rota | Descrição | Sucesso | Erros |
 | --- | --- | --- | --- | --- |
 | `POST` | `/branches/{branchCode}/products` | Vincula um produto à filial (único por filial + produto) | `201` | `400`, `404`, `409` |
+| `GET` | `/branches/{branchCode}/products` | Lista os produtos vinculados à filial, ordenados pelo código do produto | `200` | `404` |
 
 A localização é opcional (máx. 15 caracteres), salva sem espaços nas pontas e em maiúsculas. Se vier em branco, é salva como `null`.
 
@@ -152,6 +153,7 @@ Content-Type: application/json
 | Método | Rota | Descrição | Sucesso | Erros |
 | --- | --- | --- | --- | --- |
 | `POST` | `/suppliers` | Cadastra um fornecedor (CNPJ único; o nome pode repetir) | `201` | `400`, `409` |
+| `GET` | `/suppliers` | Lista todos, em ordem alfabética de nome | `200` | — |
 | `GET` | `/suppliers/{cnpj}` | Busca pelo CNPJ | `200` | `404` |
 
 O CNPJ é salvo só com letras e números, em maiúsculas (já aceita o CNPJ alfanumérico), e precisa ter 14 caracteres depois de tirar a pontuação. Na busca, mande o CNPJ sem pontuação: a `/` de um CNPJ formatado quebraria a rota.
