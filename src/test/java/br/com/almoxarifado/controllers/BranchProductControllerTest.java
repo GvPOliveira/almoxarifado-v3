@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,7 +51,8 @@ public class BranchProductControllerTest {
                             "location": "C001.P023.C.D01"
                          }
                         """).contentType(MediaType.APPLICATION_JSON)
-                ).andExpect(status().isCreated()).andExpect(jsonPath("$.productCode").value("P001"))
+                ).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.productCode").value("P001"))
                 .andExpect(jsonPath("$.location").value("C001.P023.C.D01"))
                 .andExpect(jsonPath("$.quantity").value(0))
                 .andExpect(jsonPath("$.branchCode").value("001"));
@@ -141,6 +143,72 @@ public class BranchProductControllerTest {
                          }
                         """).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Nenhum produto encontrado com o código 'P023'."));
+    }
+
+    @Test
+    void shouldReturnBranchProductsOrderedByProductCode() throws Exception {
+        mockMvc.perform(
+                        post("/products").content("""
+                                {
+                                    "code": "P000",
+                                    "name": "Product test2"
+                                }
+                                """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/branches/{branchCode}/products", "001").content("""
+                         {
+                            "productCode": "P001",
+                            "location": "C001.P023.C.D01"
+                         }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/branches/{branchCode}/products", "001").content("""
+                         {
+                            "productCode": "P000",
+                            "location": "C001.P023.A.D01"
+                         }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/branches/{branchCode}/products", "001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].productCode").value("P000"));
+    }
+
+    @Test
+    void shouldReturnEmptyListWhenBranchHasNoProducts() throws Exception {
+        mockMvc.perform(get("/branches/{branchCode}/products", "001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenListingProductsOfNonexistentBranch() throws Exception {
+        mockMvc.perform(get("/branches/{branchCode}/products", "999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Nenhuma filial encontrada com o código '999'."));
+    }
+
+    @Test
+    void shouldNotReturnProductsLinkedToAnotherBranch() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                        {
+                        "code": "Z002",
+                        "name": "Branch2"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/branches/{branchCode}/products", "Z002").content("""
+                 {
+                    "productCode": "P001",
+                    "location": "C001.P023.C.D01"
+                 }
+                """).contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated());
+        mockMvc.perform(get("/branches/{branchCode}/products", "001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
     }
 
 }

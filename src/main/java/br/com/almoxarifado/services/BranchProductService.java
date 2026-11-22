@@ -9,6 +9,7 @@ import br.com.almoxarifado.mappers.BranchProductMapper;
 import br.com.almoxarifado.repositories.BranchProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -49,5 +50,11 @@ public class BranchProductService {
         BranchProduct branchProduct = new BranchProduct(branch, product, normalizedLocation);
         BranchProduct savedBranchProduct = branchProductRepository.save(branchProduct);
         return branchProductMapper.toDto(savedBranchProduct);
+    }
+
+    public List<BranchProductResponseDto> findBranchProducts(String branchCode) {
+        Branch branch = branchService.findBranchEntityByCode(branchCode);
+        return branchProductRepository.findByBranchIdOrderByProductCodeAsc(branch.getId())
+                .stream().map(branchProductMapper::toDto).toList();
     }
 }

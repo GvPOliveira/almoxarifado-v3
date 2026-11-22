@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/branches/{branchCode}/products")
 public class BranchProductController {
@@ -21,5 +23,10 @@ public class BranchProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public BranchProductResponseDto saveBranchProduct(@RequestBody @Valid BranchProductCreateDto branchProductCreateDto, @PathVariable String branchCode) {
         return branchProductService.createBranchProduct(branchCode, branchProductCreateDto.productCode(), branchProductCreateDto.location());
+    }
+
+    @GetMapping
+    public List<BranchProductResponseDto> findAllBranchProducts(@PathVariable String branchCode) {
+        return branchProductService.findBranchProducts(branchCode);
     }
 }
