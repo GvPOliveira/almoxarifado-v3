@@ -181,7 +181,7 @@ A nota fica dentro do fornecedor porque é identificada por número + fornecedor
 Regras:
 
 - O fornecedor, a filial e cada produto precisam existir (`404`).
-- Item com destino `STOCK` exige que o produto esteja vinculado à filial da nota (`404`). Item `DIRECT` (consumo direto) não exige.
+- Item com destino `STOCK` exige que o produto esteja vinculado à filial da nota (`404`). Item `DIRECT` (aplicação direta: entregue direto ao setor, sem passar pelo estoque) não exige.
 - O número da nota é único por fornecedor (`409`) e é salvo sem espaços nas pontas.
 - A nota precisa de pelo menos um item, e cada item é validado (quantidade e preço maiores que zero, destino obrigatório). O erro de um item aparece com o caminho do campo, por exemplo `items[0].quantity`.
 - O total (`totalValue`) não é enviado: é calculado pela própria entidade como a soma de quantidade × preço unitário dos itens.
