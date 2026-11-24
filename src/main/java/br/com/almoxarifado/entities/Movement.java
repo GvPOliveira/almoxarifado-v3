@@ -22,12 +22,21 @@ public class Movement {
     @Column(nullable = false)
     private OriginType originType;
 
-    @Column(nullable = false)
-    private String originNumber;
+    @ManyToOne
+    @JoinColumn(name = "invoice_id")
+    private Invoice invoice;
 
     @ManyToOne
-    @JoinColumn(name = "branch_product_id", nullable = false)
-    private BranchProduct branchProduct;
+    @JoinColumn(name = "request_id")
+    private Request request;
+
+    @ManyToOne
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private int quantity;
@@ -38,14 +47,25 @@ public class Movement {
     public Movement() {
     }
 
-    public Movement(MovementType movementType, OriginType originType, String originNumber,
-                    BranchProduct branchProduct, int quantity) {
+    private Movement(MovementType movementType, OriginType originType, Invoice invoice, Request request, Branch branch, Product product, int quantity) {
         this.movementType = movementType;
         this.originType = originType;
-        this.originNumber = originNumber;
-        this.branchProduct = branchProduct;
+        this.invoice = invoice;
+        this.request = request;
+        this.branch = branch;
+        this.product = product;
         this.quantity = quantity;
         this.dateTime = LocalDateTime.now();
+    }
+
+    public static Movement fromInvoice(MovementType movementType, Invoice invoice,
+                                       Product product, int quantity) {
+        return new Movement(movementType, OriginType.INVOICE, invoice, null, invoice.getBranch(), product, quantity);
+    }
+
+    public static Movement fromRequest(MovementType movementType, Request request,
+                                       Product product, int quantity) {
+        return new Movement(movementType, OriginType.REQUEST, null, request, request.getBranch(), product, quantity);
     }
 
     public UUID getUuid() {
@@ -64,12 +84,20 @@ public class Movement {
         return originType;
     }
 
-    public String getOriginNumber() {
-        return originNumber;
+    public Invoice getInvoice() {
+        return invoice;
     }
 
-    public BranchProduct getBranchProduct() {
-        return branchProduct;
+    public Request getRequest() {
+        return request;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public Product getProduct() {
+        return product;
     }
 
     public LocalDateTime getDateTime() {

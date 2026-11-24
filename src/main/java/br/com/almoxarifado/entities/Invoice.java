@@ -1,6 +1,7 @@
 package br.com.almoxarifado.entities;
 
 import br.com.almoxarifado.enums.Destination;
+import br.com.almoxarifado.exceptions.conflict.InvoiceAlreadyProcessedException;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -48,6 +49,13 @@ public class Invoice {
         BigDecimal totalPrice = unitPrice.multiply(BigDecimal.valueOf(quantity));
         this.totalValue = this.totalValue.add(totalPrice);
 
+    }
+
+    public void markAsProcessed() {
+        if (this.processed) {
+            throw new InvoiceAlreadyProcessedException("A nota fiscal de número '%s' já foi processada.".formatted(this.number));
+        }
+        this.processed = true;
     }
 
     public List<ProductInvoice> getProductInvoices() {

@@ -1,5 +1,6 @@
 package br.com.almoxarifado.entities;
 
+import br.com.almoxarifado.exceptions.invalid.InvalidQuantityException;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -29,9 +30,6 @@ public class BranchProduct {
 
     private String location;
 
-    @OneToMany(mappedBy = "branchProduct")
-    private List<Movement> movements;
-
     public BranchProduct() {
     }
 
@@ -40,6 +38,13 @@ public class BranchProduct {
         this.product = product;
         this.quantity = 0;
         this.location = location;
+    }
+
+    public void increaseQuantity(int amount) {
+        if (amount < 1) {
+            throw new InvalidQuantityException("Essa quantidade está inválida.");
+        }
+        this.quantity += amount;
     }
 
     public void setLocation(String location) {

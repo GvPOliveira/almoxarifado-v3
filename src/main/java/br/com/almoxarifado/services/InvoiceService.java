@@ -5,11 +5,15 @@ import br.com.almoxarifado.dtos.invoice.InvoiceItemCreateDto;
 import br.com.almoxarifado.dtos.invoice.InvoiceResponseDto;
 import br.com.almoxarifado.entities.*;
 import br.com.almoxarifado.enums.Destination;
+import br.com.almoxarifado.enums.MovementType;
+import br.com.almoxarifado.enums.OriginType;
 import br.com.almoxarifado.exceptions.conflict.InvoiceAlreadyExistsException;
 import br.com.almoxarifado.exceptions.notfound.BranchProductNotFoundException;
+import br.com.almoxarifado.exceptions.notfound.InvoiceNotFoundException;
 import br.com.almoxarifado.mappers.InvoiceMapper;
 import br.com.almoxarifado.repositories.BranchProductRepository;
 import br.com.almoxarifado.repositories.InvoiceRepository;
+import br.com.almoxarifado.repositories.MovementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +28,7 @@ public class InvoiceService {
     private final ProductService productService;
     private final BranchProductRepository branchProductRepository;
     private final InvoiceMapper invoiceMapper;
+    private final MovementRepository movementRepository;
 
     public InvoiceService(
             InvoiceRepository invoiceRepository,
@@ -31,7 +36,8 @@ public class InvoiceService {
             BranchService branchService,
             ProductService productService,
             BranchProductRepository branchProductRepository,
-            InvoiceMapper invoiceMapper) {
+            InvoiceMapper invoiceMapper,
+            MovementRepository movementRepository) {
 
         this.invoiceRepository = invoiceRepository;
         this.supplierService = supplierService;
@@ -39,13 +45,14 @@ public class InvoiceService {
         this.productService = productService;
         this.branchProductRepository = branchProductRepository;
         this.invoiceMapper = invoiceMapper;
+        this.movementRepository = movementRepository;
     }
 
     @Transactional
     public InvoiceResponseDto createInvoice(String cnpj, InvoiceCreateDto dto) {
         Supplier supplier = supplierService.findSupplierEntityByCnpj(cnpj);
         Branch branch = branchService.findBranchEntityByCode(dto.branchCode());
-        String normalizedNumber = dto.number().trim();
+        String normalizedNumber = normalizeNumber(dto.number());
         Optional<Invoice> optInvoice = invoiceRepository.findByNumberAndSupplierCnpj(normalizedNumber, supplier.getCnpj());
         if (optInvoice.isPresent()) {
             throw new InvoiceAlreadyExistsException("Já existe uma nota fiscal com o número '%s' para o fornecedor '%s'.".formatted(normalizedNumber, supplier.getCnpj()));
@@ -62,4 +69,31 @@ public class InvoiceService {
         return invoiceMapper.toDto(savedInvoice);
     }
 
+    @Transactional
+    public InvoiceResponseDto processInvoice(String cnpj, String number) {
+        String normalizedNumber = normalizeNumber(number);
+        Invoice invoice = invoiceRepository.findByNumberAndSupplierCnpj(normalizedNumber, cnpj).orElseThrow(() ->
+                new InvoiceNotFoundException("A nota fiscal número '%s' do fornecedor '%s' não foi encontrada.".formatted(number, cnpj)));
+
+        invoice.markAsProcessed();
+        for (ProductInvoice productInvoice : invoice.getProductInvoices()) {
+            MovementType type = MovementType.DIRECT;
+            if (productInvoice.getDestination() == Destination.STOCK) {
+                BranchProduct branchProduct = branchProductRepository.findByBranchIdAndProductId(invoice.getBranch().getId(),
+                        productInvoice.getProduct().getId()).orElseThrow(() ->
+                        new BranchProductNotFoundException("O produto '%s' não tem vínculo na filial '%s'.".formatted(productInvoice.getProduct().getCode(),
+                                invoice.getBranch().getCode())));
+                branchProduct.increaseQuantity(productInvoice.getQuantity());
+                type = MovementType.ENTRY;
+
+            }
+            movementRepository.save(Movement.fromInvoice(type, invoice, productInvoice.getProduct(), productInvoice.getQuantity()));
+        }
+        return invoiceMapper.toDto(invoice);
+    }
+
+
+    private String normalizeNumber(String number) {
+        return number.trim();
+    }
 }
