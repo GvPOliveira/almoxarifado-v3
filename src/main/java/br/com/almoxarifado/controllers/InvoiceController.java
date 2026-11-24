@@ -20,10 +20,14 @@ public class InvoiceController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public InvoiceResponseDto createInvoice(@PathVariable String cnpj,
-                                             @Valid @RequestBody InvoiceCreateDto invoiceCreateDto) {
+                                            @Valid @RequestBody InvoiceCreateDto invoiceCreateDto) {
         return invoiceService.createInvoice(cnpj, invoiceCreateDto);
     }
 
+    @PostMapping("/{number}/process")
+    public InvoiceResponseDto processInvoice(@PathVariable String cnpj, @PathVariable String number) {
+        return invoiceService.processInvoice(cnpj, number);
+    }
 
 }
 
