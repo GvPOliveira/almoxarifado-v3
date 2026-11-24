@@ -1,5 +1,11 @@
 /* Estilos exclusivos da tela de notas fiscais */
 
+/* A linha de itens se ajusta à largura do formulário (e não da janela),
+   porque o menu lateral ocupa parte da tela no computador. */
+#invoice-form {
+    container-type: inline-size;
+}
+
 .items {
     min-width: 0;
     margin: 24px 0 0;
@@ -94,7 +100,7 @@
     margin-bottom: 14px;
 }
 
-@media (max-width: 860px) {
+@container (max-width: 766px) {
     .items-header {
         display: none;
     }

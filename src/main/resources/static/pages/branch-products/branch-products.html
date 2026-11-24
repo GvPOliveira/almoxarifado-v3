@@ -6,26 +6,15 @@
     <meta name="description" content="Vínculo de produtos às filiais do almoxarifado">
     <title>Produtos da filial | Almoxarifado V3</title>
     <link rel="stylesheet" href="/style.css">
+    <script src="/layout.js" defer></script>
     <link rel="stylesheet" href="branch-products.css">
 </head>
 
-<body>
-<header class="header">
-    <div class="container header-content">
-        <a href="/" class="logo">
-            <span class="logo-icon" aria-hidden="true">A</span>
-            <span>Almoxarifado<span class="logo-version">V3</span></span>
-        </a>
-        <nav class="navigation" aria-label="Navegação principal">
-            <a href="/" class="nav-link">Início</a>
-            <a href="/pages/products/products.html" class="nav-link">Produtos</a>
-            <a href="/pages/branches/branches.html" class="nav-link">Filiais</a>
-            <a href="/pages/branch-products/branch-products.html" class="nav-link" aria-current="page">Produtos da filial</a>
-            <a href="/pages/suppliers/suppliers.html" class="nav-link">Fornecedores</a>
-            <a href="/pages/invoices/invoices.html" class="nav-link">Notas fiscais</a>
-        </nav>
-    </div>
-</header>
+<body class="app">
+<aside class="sidebar" data-app-sidebar></aside>
+
+<div class="app-main">
+<header class="topbar" data-app-topbar></header>
 
 <main class="container main-content">
 
@@ -100,6 +89,7 @@
         <p>Almoxarifado V3 · Sistema de controle de estoque</p>
     </div>
 </footer>
+</div>
 <script src="branch-products.js" defer></script>
 </body>
 </html>
