@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -325,5 +326,123 @@ public class InvoiceControllerTest {
                         ).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors['items[0].quantity']").value("A quantidade é obrigatória."));
+    }
+
+    @Test
+    void shouldProcessInvoiceAndIncreaseStockWhenCnpjIsFormatted() throws Exception {
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399244",
+                                        "branchCode": "001",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 3,
+                                        "unitPrice": 5.20,
+                                        "destination": "STOCK"
+                                        },
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 2,
+                                        "unitPrice": 5,
+                                        "destination": "STOCK"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices/{number}/process", "03.038.04400ed01", "000399244"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.processed").value(true));
+
+        mockMvc.perform(get("/branches/{branchCode}/products", "001"))
+                .andExpect(jsonPath("$[0].quantity").value(5));
+    }
+
+    @Test
+    void shouldReturnConflictWhenInvoiceIsProcessedTwice() throws Exception {
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399244",
+                                        "branchCode": "001",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 3,
+                                        "unitPrice": 5.20,
+                                        "destination": "STOCK"
+                                        },
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 2,
+                                        "unitPrice": 5,
+                                        "destination": "STOCK"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices/{number}/process", "03.038.04400ed01", "000399244"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices/{number}/process", "03.038.04400ed01", "000399244"))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.message").value("A nota fiscal de número '000399244' já foi processada."));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenProcessingInvoiceThatDoesNotExist() throws Exception {
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices/{number}/process", "03.038.04400ed01", "000399244"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("A nota fiscal número '000399244' do fornecedor '0303804400ED01' não foi encontrada."));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenProcessingInvoiceAndSupplierDoesNotExist() throws Exception {
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices/{number}/process", "01.022.03300ab01", "000399244"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Nenhum fornecedor encontrado com o CNPJ '0102203300AB01'."));
+    }
+
+    @Test
+    void shouldNotChangeStockWhenProcessingDirectItems() throws Exception {
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399244",
+                                        "branchCode": "001",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 3,
+                                        "unitPrice": 5.20,
+                                        "destination": "STOCK"
+                                        },
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 2,
+                                        "unitPrice": 5,
+                                        "destination": "DIRECT"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices/{number}/process", "03.038.04400ed01", "000399244"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/branches/{branchCode}/products", "001"))
+                .andExpect(jsonPath("$[0].quantity").value(3));
     }
 }

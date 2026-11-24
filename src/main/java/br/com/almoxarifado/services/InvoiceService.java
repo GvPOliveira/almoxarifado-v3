@@ -72,8 +72,10 @@ public class InvoiceService {
     @Transactional
     public InvoiceResponseDto processInvoice(String cnpj, String number) {
         String normalizedNumber = normalizeNumber(number);
-        Invoice invoice = invoiceRepository.findByNumberAndSupplierCnpj(normalizedNumber, cnpj).orElseThrow(() ->
-                new InvoiceNotFoundException("A nota fiscal número '%s' do fornecedor '%s' não foi encontrada.".formatted(number, cnpj)));
+        Supplier supplier = supplierService.findSupplierEntityByCnpj(cnpj);
+
+        Invoice invoice = invoiceRepository.findByNumberAndSupplierCnpj(normalizedNumber, supplier.getCnpj()).orElseThrow(() ->
+                new InvoiceNotFoundException("A nota fiscal número '%s' do fornecedor '%s' não foi encontrada.".formatted(normalizedNumber, supplier.getCnpj())));
 
         invoice.markAsProcessed();
         for (ProductInvoice productInvoice : invoice.getProductInvoices()) {
