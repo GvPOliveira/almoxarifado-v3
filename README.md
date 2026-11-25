@@ -25,7 +25,8 @@ O objetivo da v3 é reconstruir o mesmo domínio com o ecossistema Spring e comp
 | Fornecedores (cadastro, busca por CNPJ) | ✅ Pronto, com API e testes |
 | Notas fiscais (cadastro com itens e total calculado) | ✅ Pronto, com API e testes |
 | Entidades e repositórios do domínio completo (estoque por filial, notas fiscais, fornecedores, requisições, movimentações) | ✅ Mapeados com JPA e testados |
-| Processamento da nota fiscal (entrada no estoque) | 🔜 Próxima etapa |
+| Processamento da nota fiscal (entrada no estoque e registro das movimentações) | ✅ Pronto, com API, testes e tela |
+| Fila de notas pendentes (filtro por filial) | ✅ Pronto, com API, testes e tela |
 | Atendimento e estorno de requisições | 🔜 Planejado |
 | Histórico de movimentações via API | 🔜 Planejado |
 
@@ -170,15 +171,17 @@ Content-Type: application/json
 { "name": "Distribuidora Exemplo", "cnpj": "0303804400ED01" }
 ```
 
-### Notas fiscais — `/suppliers/{cnpj}/invoices`
+### Notas fiscais — `/suppliers/{cnpj}/invoices` e `/invoices`
 
-A nota fica dentro do fornecedor porque é identificada por número + fornecedor. Ela é salva como **não processada** (`processed: false`): o estoque só muda quando a nota for processada (próxima etapa).
+O cadastro e o processamento ficam dentro do fornecedor, porque a nota é identificada por número + fornecedor. A fila de pendentes fica em `/invoices`, porque mistura notas de todos os fornecedores. A nota é salva como **não processada** (`processed: false`): o estoque só muda quando ela é processada.
 
 | Método | Rota | Descrição | Sucesso | Erros |
 | --- | --- | --- | --- | --- |
 | `POST` | `/suppliers/{cnpj}/invoices` | Cadastra uma nota com seus itens | `201` | `400`, `404`, `409` |
+| `POST` | `/suppliers/{cnpj}/invoices/{number}/process` | Processa a nota: dá entrada dos itens no estoque da filial e registra as movimentações | `200` | `404`, `409` |
+| `GET` | `/invoices/pending` | Lista as notas não processadas, da mais antiga para a mais nova. Filtro opcional: `?branchCode=` | `200` | `404` |
 
-Regras:
+Regras do cadastro:
 
 - O fornecedor, a filial e cada produto precisam existir (`404`).
 - Item com destino `STOCK` exige que o produto esteja vinculado à filial da nota (`404`). Item `DIRECT` (aplicação direta: entregue direto ao setor, sem passar pelo estoque) não exige.
@@ -215,6 +218,30 @@ Content-Type: application/json
 }
 ```
 
+Regras do processamento:
+
+- O CNPJ da rota pode vir com ou sem pontuação, como no cadastro. Fornecedor ou nota inexistente retornam `404`.
+- Cada item `STOCK` aumenta o saldo do produto na filial da nota e gera uma movimentação `ENTRY`. Cada item `DIRECT` gera uma movimentação `DIRECT`, sem mudar o saldo.
+- Tudo acontece numa única transação: se um item falhar, nada é gravado.
+- Uma nota só pode ser processada uma vez. A segunda tentativa retorna `409`.
+
+```http
+POST /suppliers/0303804400ed01/invoices/000123/process
+```
+
+```json
+// 200 OK: a mesma nota, agora com "processed": true
+{ "number": "000123", "supplierCnpj": "0303804400ED01", "branchCode": "SP01", "totalValue": 25.60, "processed": true, "items": [ ... ] }
+```
+
+```http
+GET /invoices/pending?branchCode=sp01
+```
+
+```json
+// 200 OK: lista de notas no mesmo formato acima, com "processed": false (lista vazia se não houver pendentes)
+```
+
 ## Domínio
 
 - **Product**: produto, com código único.
@@ -223,7 +250,7 @@ Content-Type: application/json
 - **Supplier**: fornecedor, identificado pelo CNPJ.
 - **Invoice / ProductInvoice**: nota fiscal de entrada e seus itens. O número da nota é único por fornecedor.
 - **Request / ProductRequest**: requisição de saída e seus itens, com quantidade solicitada e atendida.
-- **Movement**: histórico de movimentações (`ENTRY`, `OUTPUT`, `REVERSAL`).
+- **Movement**: histórico de movimentações (`ENTRY`, `DIRECT`, `OUTPUT`, `REVERSAL`).
 
 Itens de nota fiscal podem ter destino `STOCK` (movimenta o estoque) ou `DIRECT` (apenas registrado, sem entrada no estoque).
 
@@ -238,7 +265,7 @@ Principais regras de negócio:
 
 Os testes rodam com o perfil `test`, que usa um **banco H2 em memória**. Não é preciso ter MySQL instalado para executá-los, e eles não alteram o banco de desenvolvimento.
 
-- **Testes de API (MockMvc)**: produtos, filiais, vínculo de produto à filial, fornecedores e notas fiscais, cobrindo os status 201, 200, 400, 404 e 409, além de casos de borda como códigos que diferem só por maiúsculas ou espaços, CNPJ formatado e validação de itens dentro da lista.
+- **Testes de API (MockMvc)**: produtos, filiais, vínculo de produto à filial, fornecedores, notas fiscais (cadastro, processamento com conferência do saldo e fila de pendentes), cobrindo os status 201, 200, 400, 404 e 409, além de casos de borda como códigos que diferem só por maiúsculas ou espaços, CNPJ formatado e validação de itens dentro da lista.
 - **Testes unitários de entidade (JUnit puro, sem Spring)**: o cálculo do total da nota fiscal ao adicionar itens.
 - **Testes de repositório**: consultas do Spring Data JPA para filiais, estoque por filial, fornecedores, notas fiscais, requisições e movimentações, incluindo os cenários de "não encontrado".
 
