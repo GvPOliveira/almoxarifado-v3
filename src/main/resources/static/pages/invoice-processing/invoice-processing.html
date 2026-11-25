@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Conferência e processamento das notas fiscais pendentes do almoxarifado">
+    <title>Processar notas | Almoxarifado V3</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/layout.js" defer></script>
+    <link rel="stylesheet" href="invoice-processing.css">
+    <script src="invoice-processing.js" defer></script>
+</head>
+
+<body class="app">
+<aside class="sidebar" data-app-sidebar></aside>
+
+<div class="app-main">
+<header class="topbar" data-app-topbar></header>
+
+<main class="container main-content">
+
+    <section class="page-heading">
+        <p class="eyebrow">Entrada</p>
+        <h1>Processar notas</h1>
+        <p class="page-description">
+            Confira a nota pendente e dê entrada dos itens no estoque da filial. Itens de
+            <strong>aplicação direta</strong> são registrados, mas não mudam o estoque.
+        </p>
+    </section>
+
+    <div id="process-message" class="message" role="status" aria-live="polite" hidden></div>
+
+    <div class="process-page">
+        <div class="process-layout">
+
+            <section class="card" aria-labelledby="queue-title">
+                <div class="card-heading">
+                    <div>
+                        <h2 id="queue-title">
+                            Notas pendentes
+                            <span id="pending-count" class="badge badge-pending">0</span>
+                        </h2>
+                        <p>A mais antiga aparece primeiro.</p>
+                    </div>
+                    <button type="button" id="refresh-button" class="button button-secondary">Atualizar</button>
+                </div>
+
+                <div class="form-group queue-filter">
+                    <label for="branch-filter">Filial</label>
+                    <select id="branch-filter">
+                        <option value="">Todas as filiais</option>
+                    </select>
+                </div>
+
+                <div id="queue-message" class="message" role="status" aria-live="polite" hidden></div>
+
+                <ul id="pending-list" class="queue-list" aria-label="Notas pendentes"></ul>
+            </section>
+
+            <section id="detail-card" class="card" aria-labelledby="detail-title">
+                <div class="card-heading">
+                    <div>
+                        <h2 id="detail-title">Conferência</h2>
+                        <p>Confira os itens antes de dar entrada.</p>
+                    </div>
+                </div>
+
+                <div id="detail-empty" class="empty-state">
+                    <strong>Nenhuma nota selecionada</strong>
+                    Escolha uma nota na lista para conferir os itens.
+                </div>
+
+                <div id="detail-content" hidden>
+                    <div class="detail-heading">
+                        <h3 id="detail-number">Nota fiscal</h3>
+                        <span class="badge badge-pending">Pendente</span>
+                    </div>
+
+                    <dl id="detail-info" class="details"></dl>
+
+                    <div class="table-wrap detail-table">
+                        <table class="table">
+                            <caption class="visually-hidden">Itens da nota fiscal</caption>
+                            <thead>
+                            <tr>
+                                <th scope="col">Produto</th>
+                                <th scope="col">Destino</th>
+                                <th scope="col" class="number">Qtd.</th>
+                                <th scope="col" class="number">Preço unit.</th>
+                                <th scope="col" class="number">Total</th>
+                                <th scope="col" class="number">Saldo na filial</th>
+                            </tr>
+                            </thead>
+                            <tbody id="detail-items"></tbody>
+                        </table>
+                    </div>
+
+                    <p id="detail-summary" class="process-summary"></p>
+
+                    <div class="form-actions">
+                        <button type="button" id="process-button" class="button button-primary">Processar entrada</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>Almoxarifado V3 · Sistema de controle de estoque</p>
+    </div>
+</footer>
+</div>
+
+<dialog id="confirm-dialog" class="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+    <h2 id="confirm-title">Confirmar entrada</h2>
+    <p id="confirm-text"></p>
+    <div class="form-actions">
+        <button type="button" id="confirm-cancel" class="button button-secondary">Cancelar</button>
+        <button type="button" id="confirm-ok" class="button button-primary">Confirmar entrada</button>
+    </div>
+</dialog>
+</body>
+</html>

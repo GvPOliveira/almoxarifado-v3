@@ -1,0 +1,197 @@
+/* Estilos exclusivos da tela de processar notas */
+
+/* A troca de duas colunas para uma depende da largura do conteúdo (e não da janela),
+   porque o menu lateral ocupa parte da tela no computador. */
+.process-page {
+    container-type: inline-size;
+}
+
+.process-layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.process-layout > .card {
+    margin-bottom: 0;
+}
+
+@container (max-width: 820px) {
+    .process-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+#queue-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.queue-filter {
+    margin-bottom: 16px;
+}
+
+/* ===== Fila de notas pendentes ===== */
+
+.queue-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.queue-item {
+    width: 100%;
+    display: grid;
+    gap: 4px;
+    padding: 12px 14px;
+    color: var(--text);
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-small);
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.queue-item:hover {
+    background: var(--surface-muted);
+    border-color: var(--border-strong);
+}
+
+.queue-item:focus-visible {
+    outline: 3px solid rgb(37 99 235 / 30%);
+    outline-offset: 2px;
+}
+
+.queue-item[aria-current="true"] {
+    background: var(--primary-soft);
+    border-color: var(--primary);
+}
+
+.queue-item-top,
+.queue-item-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+}
+
+.queue-item-top {
+    font-weight: 700;
+}
+
+.queue-item-meta {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.queue-item-meta span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.queue-item-meta span:last-child,
+.queue-item-top span:last-child {
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== Conferência da nota ===== */
+
+.detail-heading {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.detail-heading h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.detail-table {
+    margin-top: 20px;
+}
+
+.detail-table td {
+    vertical-align: top;
+}
+
+.detail-table .product-name {
+    display: block;
+    margin-top: 4px;
+}
+
+.detail-table small {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.stock-change {
+    white-space: nowrap;
+}
+
+.stock-change strong {
+    color: var(--success);
+}
+
+.no-stock {
+    color: var(--text-secondary);
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.process-summary {
+    margin: 18px 0 0;
+    padding: 12px 15px;
+    color: var(--text);
+    background: var(--primary-soft);
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius-small);
+    font-size: 14px;
+}
+
+/* ===== Janela de confirmação ===== */
+
+.confirm-dialog {
+    width: min(440px, calc(100% - 32px));
+    padding: 24px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 40px rgb(15 23 42 / 18%);
+}
+
+.confirm-dialog::backdrop {
+    background: rgb(15 23 42 / 40%);
+}
+
+.confirm-dialog h2 {
+    margin-bottom: 8px;
+    font-size: 19px;
+}
+
+.confirm-dialog p {
+    margin-bottom: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+@media (max-width: 640px) {
+    .confirm-dialog .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .confirm-dialog .form-actions .button {
+        width: 100%;
+    }
+}

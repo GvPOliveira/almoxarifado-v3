@@ -34,7 +34,7 @@
             title: "Entradas",
             items: [
                 {label: "Notas fiscais", href: "/pages/invoices/invoices.html"},
-                {label: "Processar notas"}
+                {label: "Processar notas", href: "/pages/invoice-processing/invoice-processing.html"}
             ]
         },
         {
