@@ -445,4 +445,209 @@ public class InvoiceControllerTest {
         mockMvc.perform(get("/branches/{branchCode}/products", "001"))
                 .andExpect(jsonPath("$[0].quantity").value(3));
     }
+
+    @Test
+    void shouldReturnOnlyPendingInvoicesWhenFilteringByBranch() throws Exception {
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399244",
+                                        "branchCode": "001",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 3,
+                                        "unitPrice": 5.20,
+                                        "destination": "STOCK"
+                                        },
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 2,
+                                        "unitPrice": 5,
+                                        "destination": "DIRECT"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399245",
+                                        "branchCode": "001",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 10,
+                                        "unitPrice": 5.20,
+                                        "destination": "STOCK"
+                                        },
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 5,
+                                        "unitPrice": 5,
+                                        "destination": "DIRECT"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices/{number}/process", "03.038.04400ed01", "000399244"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/invoices/pending").param("branchCode", "001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].number").value("000399245"));
+    }
+
+    @Test
+    void shouldReturnAllBranchesPendingInvoicesWhenNotPassedBranchCode() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                        {
+                        "code": "002",
+                        "name": "BranchNorth"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+        mockMvc.perform(post("/branches/{branchCode}/products", "002").content("""
+                 {
+                    "productCode": "P001",
+                    "location": "C001.P023.C.D01"
+                 }
+                """).contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399244",
+                                        "branchCode": "002",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 3,
+                                        "unitPrice": 5.20,
+                                        "destination": "STOCK"
+                                        },
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 2,
+                                        "unitPrice": 5,
+                                        "destination": "DIRECT"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399245",
+                                        "branchCode": "001",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 10,
+                                        "unitPrice": 6,
+                                        "destination": "STOCK"
+                                        },
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 5,
+                                        "unitPrice": 15,
+                                        "destination": "DIRECT"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/invoices/pending"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].number").value("000399244"))
+                .andExpect(jsonPath("$[1].number").value("000399245"));
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenFindInvoicesPendingWithBranchDoesNotExist() throws Exception {
+        mockMvc.perform(get("/invoices/pending").param("branchCode", "999"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Nenhuma filial encontrada com o código '999'."));
+    }
+
+    @Test
+    void shouldReturnListEmptyWhenDoesNotExistPendingInvoices() throws Exception {
+        mockMvc.perform(get("/invoices/pending").param("branchCode", "001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    void shouldNotReturnInvoicesFromOtherBranchesWhenFilteringByBranch() throws Exception {
+        mockMvc.perform(post("/branches").content("""
+                        {
+                        "code": "002",
+                        "name": "BranchNorth"
+                        }
+                        """).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        // Item DIRECT não exige o vínculo do produto com a filial 002.
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399244",
+                                        "branchCode": "002",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 3,
+                                        "unitPrice": 5.20,
+                                        "destination": "DIRECT"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/suppliers/{cnpj}/invoices", "03.038.04400ed01")
+                        .content(
+                                """
+                                        {
+                                        "number": "000399245",
+                                        "branchCode": "001",
+                                        "items": [
+                                        {
+                                        "productCode": "P001",
+                                        "quantity": 10,
+                                        "unitPrice": 6,
+                                        "destination": "STOCK"
+                                        }
+                                        ]
+                                        }
+                                        """
+                        ).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/invoices/pending").param("branchCode", "002"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(1))
+                .andExpect(jsonPath("$[0].number").value("000399244"))
+                .andExpect(jsonPath("$[0].branchCode").value("002"));
+    }
 }

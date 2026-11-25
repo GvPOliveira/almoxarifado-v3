@@ -17,6 +17,7 @@ import br.com.almoxarifado.repositories.MovementRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,6 +69,16 @@ public class InvoiceService {
         Invoice savedInvoice = invoiceRepository.save(invoice);
         return invoiceMapper.toDto(savedInvoice);
     }
+
+    @Transactional(readOnly = true)
+    public List<InvoiceResponseDto> findPendingInvoices(String branchCode) {
+        if (branchCode == null || branchCode.isBlank()) {
+            return invoiceRepository.findByProcessedFalseOrderByIdAsc().stream().map(invoiceMapper::toDto).toList();
+        }
+        Branch branch = branchService.findBranchEntityByCode(branchCode);
+        return invoiceRepository.findByBranchIdAndProcessedFalseOrderByIdAsc(branch.getId()).stream().map(invoiceMapper::toDto).toList();
+    }
+
 
     @Transactional
     public InvoiceResponseDto processInvoice(String cnpj, String number) {

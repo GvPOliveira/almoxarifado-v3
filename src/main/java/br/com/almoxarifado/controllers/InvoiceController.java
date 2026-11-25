@@ -7,8 +7,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/suppliers/{cnpj}/invoices")
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
@@ -17,17 +18,21 @@ public class InvoiceController {
         this.invoiceService = invoiceService;
     }
 
-    @PostMapping
+    @PostMapping("/suppliers/{cnpj}/invoices")
     @ResponseStatus(HttpStatus.CREATED)
     public InvoiceResponseDto createInvoice(@PathVariable String cnpj,
                                             @Valid @RequestBody InvoiceCreateDto invoiceCreateDto) {
         return invoiceService.createInvoice(cnpj, invoiceCreateDto);
     }
 
-    @PostMapping("/{number}/process")
+    @PostMapping("/suppliers/{cnpj}/invoices/{number}/process")
     public InvoiceResponseDto processInvoice(@PathVariable String cnpj, @PathVariable String number) {
         return invoiceService.processInvoice(cnpj, number);
     }
 
+    @GetMapping("/invoices/pending")
+    public List<InvoiceResponseDto> findPendingInvoices(@RequestParam(required = false) String branchCode) {
+        return invoiceService.findPendingInvoices(branchCode);
+    }
 }
 
